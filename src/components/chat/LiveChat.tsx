@@ -9,6 +9,7 @@ import { useUser } from '@/contexts/UserContext';
 import { formatDistanceToNow } from 'date-fns';
 import { io } from 'socket.io-client';
 import { Home as HomeIcon, MessageCircle as MessageCircleIcon } from 'react-feather';
+import { Link, useNavigate } from 'react-router-dom';
 
 type ChatView = 'home' | 'messages' | 'help' | 'support';
 
@@ -25,6 +26,7 @@ const LiveChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentView, setCurrentView] = useState<ChatView>('messages');
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
@@ -105,6 +107,7 @@ const LiveChat: React.FC = () => {
   ];
 
   const socketRef = useRef(io('http://localhost:3000'));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (connected) {
@@ -171,13 +174,23 @@ const LiveChat: React.FC = () => {
       setSelectedTopic(null);
       return;
     }
-    setCurrentView('home');
+    if (currentView === 'support') {
+      setCurrentView('messages');
+    } else {
+      setCurrentView('home');
+    }
   };
 
   const handleLogin = () => {
-    // You can replace this with your actual login route
-    window.location.href = '/login';
+    setIsOpen(false);
+    navigate('/login');
   };
+
+  const filteredHelpTopics = helpTopics.filter(topic => 
+    topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    topic.preview.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    topic.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderEmptyState = () => (
     <div className="flex flex-col items-center justify-center h-full text-center px-4">
@@ -332,7 +345,7 @@ const LiveChat: React.FC = () => {
           variant="ghost"
           size="sm"
           onClick={handleBack}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-gray-500 hover:text-gray-700 p-2 rounded-full"
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
@@ -348,9 +361,9 @@ const LiveChat: React.FC = () => {
         </div>
         <button
           onClick={handleClose}
-          className="ml-auto text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="ml-auto p-3 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <X className="w-5 w-5" />
+          <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
         </button>
       </div>
 
@@ -372,7 +385,7 @@ const LiveChat: React.FC = () => {
               In case you have questions about something not mentioned here, please{' '}
               <button 
                 onClick={handleLogin}
-                className="text-[#4169E1] hover:underline font-medium"
+                className="text-[#4169E1] hover:underline font-medium cursor-pointer"
               >
                 log into your account
               </button>{' '}
@@ -402,6 +415,68 @@ const LiveChat: React.FC = () => {
     </>
   );
 
+  const renderHelpCenter = () => (
+    <>
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="text-gray-500 hover:text-gray-700 p-2 rounded-full"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h3 className="font-semibold">Help Center</h3>
+            <p className="text-sm text-gray-500">Find answers to common questions</p>
+          </div>
+        </div>
+        <button
+          onClick={handleClose}
+          className="p-3 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+        </button>
+      </div>
+      <div className="p-4 border-b">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search for help"
+            className="pl-9 bg-gray-50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="flex-1 overflow-auto p-4">
+        <div className="space-y-4">
+          {searchQuery && filteredHelpTopics.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No results found for "{searchQuery}"
+            </div>
+          ) : (
+            filteredHelpTopics.map((topic, index) => (
+              <button
+                key={index}
+                onClick={() => handleTopicClick(topic.title)}
+                className={cn(
+                  "w-full text-left p-4 rounded-lg",
+                  "bg-gray-50 hover:bg-gray-100",
+                  "transition-colors duration-200"
+                )}
+              >
+                <h4 className="font-medium mb-1">{topic.title}</h4>
+                <p className="text-sm text-gray-500 line-clamp-2">{topic.preview}</p>
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+    </>
+  );
+
   const renderView = () => {
     switch (currentView) {
       case 'home':
@@ -411,17 +486,17 @@ const LiveChat: React.FC = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSelectedTopic(null)}
-                className="text-gray-500 hover:text-gray-700 flex items-center"
+                onClick={handleBack}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex items-center gap-1"
               >
-                <ChevronLeft className="h-5 w-5 mr-1" />
-                Back
+                <ChevronLeft className="h-5 w-5" />
+                <span>Back</span>
               </Button>
               <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                onClick={handleClose}
+                className="p-3 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
               </button>
             </div>
             <div className="flex-1 overflow-auto p-6">
@@ -500,19 +575,17 @@ const LiveChat: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleBack}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-full flex items-center gap-1"
               >
-                <ChevronLeft className="h-5 w-5 mr-1" />
-                Back
+                <ChevronLeft className="h-5 w-5" />
+                <span>Back</span>
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+              <button
+                onClick={handleClose}
+                className="p-3 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X className="h-5 w-5" />
-              </Button>
+                <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+              </button>
             </div>
             <div className="flex-1 overflow-auto p-4">
               <div className="space-y-4">
@@ -544,49 +617,7 @@ const LiveChat: React.FC = () => {
             </div>
           </>
         ) : (
-          <>
-            <div className="flex items-center justify-between p-4 border-b">
-              <div>
-                <h3 className="font-semibold">Help Center</h3>
-                <p className="text-sm text-gray-500">Find answers to common questions</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="p-4 border-b">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search for help"
-                  className="pl-9 bg-gray-50"
-                />
-              </div>
-            </div>
-            <div className="flex-1 overflow-auto p-4">
-              <div className="space-y-4">
-                {helpTopics.map((topic, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleTopicClick(topic.title)}
-                    className={cn(
-                      "w-full text-left p-4 rounded-lg",
-                      "bg-gray-50 hover:bg-gray-100",
-                      "transition-colors duration-200"
-                    )}
-                  >
-                    <h4 className="font-medium mb-1">{topic.title}</h4>
-                    <p className="text-sm text-gray-500 line-clamp-2">{topic.preview}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
+          renderHelpCenter()
         );
     }
   };
@@ -612,9 +643,9 @@ const LiveChat: React.FC = () => {
           <div className="bg-[#4169E1] text-white p-6 relative overflow-hidden">
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors z-10"
+              className="absolute top-4 right-4 p-3 hover:bg-white/10 rounded-full transition-colors z-10 group"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 text-white/80 group-hover:text-white" />
             </button>
             {/* Decorative background curve */}
             <div 
