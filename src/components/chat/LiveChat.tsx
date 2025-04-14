@@ -160,8 +160,32 @@ const LiveChat: React.FC = () => {
     }
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    setCurrentView('home'); // Reset to home view when closing
+  };
+
   const handleBack = () => {
-    setSelectedTopic(null);
+    switch (currentView) {
+      case 'support':
+        setCurrentView('messages');
+        break;
+      case 'messages':
+      case 'help':
+        setCurrentView('home');
+        break;
+      default:
+        if (selectedTopic) {
+          setSelectedTopic(null);
+        } else {
+          setCurrentView('home');
+        }
+    }
+  };
+
+  const handleLogin = () => {
+    // You can replace this with your actual login route
+    window.location.href = '/login';
   };
 
   const renderEmptyState = () => (
@@ -185,7 +209,7 @@ const LiveChat: React.FC = () => {
     <div className="flex items-center justify-between p-4 border-b bg-white">
       <h2 className="text-xl font-semibold">Messages</h2>
       <button
-        onClick={() => setIsOpen(false)}
+        onClick={handleClose}
         className="text-gray-500 hover:text-gray-700 transition-colors p-2"
       >
         <X className="w-5 h-5" />
@@ -231,9 +255,19 @@ const LiveChat: React.FC = () => {
   const renderMessages = () => (
     <>
       <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-xl font-semibold">Messages</h2>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <h2 className="text-xl font-semibold">Messages</h2>
+        </div>
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <X className="w-5 h-5" />
@@ -306,7 +340,7 @@ const LiveChat: React.FC = () => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setCurrentView('messages')}
+          onClick={handleBack}
           className="text-gray-500 hover:text-gray-700"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -322,7 +356,7 @@ const LiveChat: React.FC = () => {
           </div>
         </div>
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           className="ml-auto text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <X className="w-5 h-5" />
@@ -346,7 +380,7 @@ const LiveChat: React.FC = () => {
             <p className="text-gray-600 mb-2">
               In case you have questions about something not mentioned here, please{' '}
               <button 
-                onClick={() => {/* Handle login */}}
+                onClick={handleLogin}
                 className="text-[#4169E1] hover:underline font-medium"
               >
                 log into your account
@@ -393,7 +427,7 @@ const LiveChat: React.FC = () => {
                 Back
               </Button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <X className="h-5 w-5" />
@@ -483,7 +517,7 @@ const LiveChat: React.FC = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
@@ -528,7 +562,7 @@ const LiveChat: React.FC = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="h-5 w-5" />
@@ -571,7 +605,7 @@ const LiveChat: React.FC = () => {
       <Button
         onClick={() => {
           setIsOpen(true);
-          setCurrentView('support');
+          setCurrentView('home'); // Always open to home view when clicking the chat icon
         }}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#4169E1] hover:bg-[#3154c4] flex items-center justify-center shadow-lg transition-colors"
       >
@@ -585,6 +619,12 @@ const LiveChat: React.FC = () => {
       {currentView === 'home' ? (
         <>
           <div className="bg-[#4169E1] text-white p-6 relative overflow-hidden">
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
             {/* Decorative background curve */}
             <div 
               className="absolute bottom-0 left-0 right-0 h-24 bg-[#5179F2] rounded-[100%] transform translate-y-12"
@@ -607,7 +647,7 @@ const LiveChat: React.FC = () => {
                   ELITE MP
                 </h1>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleClose}
                   className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full"
                 >
                   <X className="w-6 h-6" />
