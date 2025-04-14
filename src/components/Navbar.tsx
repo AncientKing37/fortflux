@@ -40,24 +40,13 @@ const Navbar: React.FC = () => {
   return (
     <header className="bg-black border-b border-yellow-500/20 sticky top-0 z-50 transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center">
           <Link 
             to="/" 
             className="text-2xl font-extrabold tracking-wider text-yellow-500 hover:text-yellow-600 transition-colors font-montserrat"
           >
             ELITE MP
           </Link>
-          <div className="h-12 w-16 overflow-hidden bg-yellow-500/10 flex items-center justify-center rounded-md">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            >
-              <source src="/logo-animation.mp4" type="video/mp4" />
-            </video>
-          </div>
         </div>
 
         <nav className="hidden md:flex items-center gap-6 lg:gap-8">
