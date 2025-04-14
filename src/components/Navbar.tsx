@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center">
           <Link 
             to="/" 
-            className="text-2xl font-bold text-yellow-500 font-bungee-spice hover:text-yellow-600 transition-colors"
+            className="text-2xl font-bold text-yellow-500 hover:text-yellow-600 transition-colors font-bungee"
             style={{ fontFamily: 'BungeeSpice' }}
           >
             ELITE MP

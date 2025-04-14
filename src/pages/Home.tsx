@@ -1,7 +1,8 @@
+import React from 'react';
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, Check, Wallet, Clock, Search, CircleDollarSign } from "lucide-react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const Home: React.FC = () => {
   return (

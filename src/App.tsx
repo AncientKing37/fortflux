@@ -29,7 +29,6 @@ import Footer from './components/Footer';
 import LiveChat from './components/chat/LiveChat';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EscrowHome from './pages/dashboard/EscrowHome';
-import SupportHome from './pages/dashboard/SupportHome';
 import Settings from './pages/dashboard/Settings';
 
 // Admin dashboard components
