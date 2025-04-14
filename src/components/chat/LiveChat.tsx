@@ -440,10 +440,55 @@ const LiveChat: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 right-6 w-[380px] h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
-      {renderHeader()}
-      <div className="flex-1 overflow-y-auto bg-white">
-        {renderEmptyState()}
+      <div className="bg-[#4169E1] text-white p-6 relative">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold font-['Montserrat']">ELITE MP</h1>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-white hover:text-gray-200 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="flex items-center gap-2 mb-2">
+          {supportAgents.map((agent, index) => (
+            <Avatar key={agent.id} className={cn("w-8 h-8 border-2 border-white", index > 0 && "-ml-4")}>
+              <AvatarImage src={agent.avatar} />
+              <AvatarFallback>{agent.name[0]}</AvatarFallback>
+            </Avatar>
+          ))}
+        </div>
+        <h2 className="text-2xl font-semibold mb-1">Hey there 👋</h2>
+        <p className="text-lg">How can we help?</p>
       </div>
+
+      <div className="flex-1 overflow-y-auto bg-white">
+        <div className="p-4">
+          <Button 
+            className="w-full mb-6 bg-white text-[#4169E1] border border-[#4169E1] hover:bg-[#4169E1] hover:text-white transition-colors py-6 text-lg font-medium rounded-xl"
+            onClick={() => {
+              setCurrentView('messages');
+              setIsOpen(true);
+            }}
+          >
+            Send us a message
+          </Button>
+
+          <div className="space-y-4">
+            {helpTopics.map((topic, index) => (
+              <button
+                key={index}
+                onClick={() => handleTopicClick(topic.title)}
+                className="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <h4 className="font-medium text-gray-900 mb-1">{topic.title}</h4>
+                <p className="text-sm text-gray-600 line-clamp-2">{topic.preview}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {renderBottomNav()}
     </div>
   );
