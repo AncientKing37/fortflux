@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
@@ -9,8 +8,8 @@ const SellAccount: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Sell Your Fortnite Account | EL1TE MARKETPLACE</title>
-        <meta name="description" content="Sell your Fortnite account safely and securely. Get the best price for your rare skins and items." />
+        <title>ELITE MP | Sell Your Account</title>
+        <meta name="description" content="Sell your Fortnite account securely on ELITE MP" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">

@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Shield, Check, Wallet, Clock, Search, CircleDollarSign } from "lucide-react";
+import { Helmet } from "react-helmet";
 
 const Home: React.FC = () => {
   return (
     <>
+      <Helmet>
+        <title>ELITE MP | Homepage</title>
+        <meta name="description" content="The secure marketplace for buying and selling Fortnite accounts" />
+      </Helmet>
       <div className="min-h-screen bg-white">
         {/* Hero Section with custom wallpaper */}
         <section className="relative overflow-hidden py-20 md:py-28">

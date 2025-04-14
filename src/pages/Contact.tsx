@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
@@ -40,8 +39,8 @@ const Contact: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Contact Us | EL1TE MARKETPLACE</title>
-        <meta name="description" content="Get in touch with our support team for any questions or issues regarding buying or selling Fortnite accounts." />
+        <title>ELITE MP | Contact Us</title>
+        <meta name="description" content="Contact ELITE MP for support and inquiries" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -7,8 +6,8 @@ const FAQ: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Frequently Asked Questions | EL1TE MARKETPLACE</title>
-        <meta name="description" content="Find answers to common questions about buying and selling Fortnite accounts." />
+        <title>ELITE MP | FAQ</title>
+        <meta name="description" content="Frequently Asked Questions about ELITE MP marketplace" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">

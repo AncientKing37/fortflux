@@ -5,8 +5,8 @@ const Privacy: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Privacy Policy | ELITE MARKETPLACE</title>
-        <meta name="description" content="Privacy policy for ELITE MARKETPLACE, explaining how we collect, use, and protect your personal information." />
+        <title>ELITE MP | Privacy Policy</title>
+        <meta name="description" content="Privacy policy for ELITE MP marketplace" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">

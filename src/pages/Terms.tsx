@@ -5,8 +5,8 @@ const Terms: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Terms of Service | ELITE MARKETPLACE</title>
-        <meta name="description" content="Terms and conditions for using the ELITE MARKETPLACE platform." />
+        <title>ELITE MP | Terms of Service</title>
+        <meta name="description" content="Terms and conditions for using ELITE MP marketplace" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">
