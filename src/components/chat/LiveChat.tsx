@@ -612,79 +612,49 @@ const LiveChat: React.FC = () => {
           <div className="bg-[#4169E1] text-white p-6 relative overflow-hidden">
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+              className="absolute top-4 right-4 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors z-10"
             >
               <X className="w-5 h-5" />
             </button>
             {/* Decorative background curve */}
             <div 
-              className="absolute bottom-0 left-0 right-0 h-24 bg-[#5179F2] rounded-[100%] transform translate-y-12"
+              className="absolute inset-0 w-full h-full"
               style={{
-                borderRadius: '100% 100% 0 0',
-                width: '150%',
-                marginLeft: '-25%'
+                background: "radial-gradient(circle at top right, #5C7CFA, transparent 60%)",
               }}
             />
-
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-6">
-                <h1 
-                  className="text-3xl font-extrabold tracking-wide"
-                  style={{ 
-                    fontFamily: 'Montserrat, sans-serif',
-                    letterSpacing: '0.05em'
-                  }}
-                >
-                  ELITE MP
-                </h1>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="flex items-center gap-1 mb-4">
+            <div className="relative z-[1]">
+              <div className="flex items-center gap-3 mb-6">
                 {supportAgents.map((agent, index) => (
-                  <div key={agent.id} className="relative">
-                    <Avatar 
-                      className={cn(
-                        "w-10 h-10 border-2 border-white/90 shadow-md transition-transform hover:scale-105",
-                        index > 0 && "-ml-3"
-                      )}
-                    >
-                      <AvatarImage src={agent.avatar} />
-                      <AvatarFallback>{agent.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
+                  <div key={agent.name} className={cn("relative", index !== 0 && "-ml-6")}>
+                    <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden">
+                      <img src={agent.avatar} alt={agent.name} className="w-full h-full object-cover" />
+                    </div>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
                   </div>
                 ))}
               </div>
-
-              <h2 className="text-2xl font-semibold mb-2">
-                Hey there <span className="wave">👋</span>
-              </h2>
-              <p className="text-lg text-white/90">How can we help?</p>
+              <h3 className="text-2xl font-semibold mb-2">
+                Hey there <span className="wave inline-block">👋</span>
+              </h3>
+              <p className="text-white/90">How can we help?</p>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto bg-white">
             <div className="p-4">
-              <Button 
+              <button 
+                onClick={() => setCurrentView('support')}
                 className="w-full mb-6 bg-white text-[#4169E1] border border-[#4169E1] hover:bg-[#4169E1] hover:text-white transition-colors py-6 text-lg font-medium rounded-xl"
-                onClick={() => {
-                  setCurrentView('support');
-                }}
               >
                 Send us a message
-              </Button>
+              </button>
 
               <div className="space-y-4">
                 {helpTopics.map((topic, index) => (
                   <button
                     key={index}
-                    onClick={() => handleTopicClick(topic.title)}
+                    onClick={() => setSelectedTopic(topic.title)}
                     className="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <h4 className="font-medium text-gray-900 mb-1">{topic.title}</h4>
