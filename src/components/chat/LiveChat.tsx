@@ -272,13 +272,13 @@ const LiveChat: React.FC = () => {
           </div>
           <h3 className="text-xl font-semibold mb-2">No messages</h3>
           <p className="text-gray-500 text-sm mb-8">Messages from the team will be shown here</p>
-          <Button 
-            className="bg-[#4169E1] hover:bg-[#3154c4] text-white font-medium py-3 px-6 rounded-full flex items-center gap-2 transition-colors"
+          <button 
             onClick={() => setCurrentView('support')}
+            className="bg-[#4169E1] hover:bg-[#3154c4] text-white font-medium py-3 px-6 rounded-full flex items-center justify-center gap-2 transition-colors w-full max-w-xs"
           >
-            Send us a message
+            <span>Send us a message</span>
             <ChevronRight className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
       ) : (
         <div className="flex-1 overflow-auto p-4">
@@ -645,9 +645,9 @@ const LiveChat: React.FC = () => {
             <div className="p-4">
               <button 
                 onClick={() => setCurrentView('support')}
-                className="w-full mb-6 bg-white text-[#4169E1] border border-[#4169E1] hover:bg-[#4169E1] hover:text-white transition-colors py-6 text-lg font-medium rounded-xl"
+                className="w-full mb-6 bg-white text-[#4169E1] border border-[#4169E1] hover:bg-[#4169E1] hover:text-white transition-colors py-6 text-lg font-medium rounded-xl flex items-center justify-center"
               >
-                Send us a message
+                <span className="inline-block">Send us a message</span>
               </button>
 
               <div className="space-y-4">
