@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageCircle, X, Search, Send, ChevronLeft, ChevronRight, Home, HelpCircle } from 'lucide-react';
+import { MessageCircle, X, Search, Send, ChevronLeft, ChevronRight, Home, HelpCircle, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSocket } from '@/contexts/SocketContext';
 import { useUser } from '@/contexts/UserContext';
@@ -23,7 +23,7 @@ const LiveChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentView, setCurrentView] = useState<ChatView>('home');
+  const [currentView, setCurrentView] = useState<ChatView>('messages');
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -148,6 +148,70 @@ const LiveChat: React.FC = () => {
   const handleBack = () => {
     setSelectedTopic(null);
   };
+
+  const renderEmptyState = () => (
+    <div className="flex flex-col items-center justify-center h-full text-center px-4">
+      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <MessageSquare className="w-8 h-8 text-gray-400" />
+      </div>
+      <h3 className="text-xl font-semibold mb-2">No messages</h3>
+      <p className="text-gray-500 text-sm">Messages from the team will be shown here</p>
+      <Button 
+        className="mt-8 bg-[#4169E1] hover:bg-[#3154c4] text-white font-medium py-3 px-6 rounded-full flex items-center gap-2 transition-colors"
+        onClick={() => setCurrentView('messages')}
+      >
+        Send us a message
+        <span className="ml-1">→</span>
+      </Button>
+    </div>
+  );
+
+  const renderHeader = () => (
+    <div className="flex items-center justify-between p-4 border-b bg-white">
+      <h2 className="text-xl font-semibold">Messages</h2>
+      <button
+        onClick={() => setIsOpen(false)}
+        className="text-gray-500 hover:text-gray-700 transition-colors p-2"
+      >
+        <X className="w-5 h-5" />
+      </button>
+    </div>
+  );
+
+  const renderBottomNav = () => (
+    <div className="flex items-center justify-around border-t py-3 px-4 bg-white">
+      <button
+        onClick={() => setCurrentView('home')}
+        className={cn(
+          "flex flex-col items-center gap-1 px-4",
+          currentView === 'home' ? "text-[#4169E1]" : "text-gray-400"
+        )}
+      >
+        <HomeIcon className="w-6 h-6" />
+        <span className="text-xs font-medium">Home</span>
+      </button>
+      <button
+        onClick={() => setCurrentView('messages')}
+        className={cn(
+          "flex flex-col items-center gap-1 px-4",
+          currentView === 'messages' ? "text-[#4169E1]" : "text-gray-400"
+        )}
+      >
+        <MessageSquare className="w-6 h-6" />
+        <span className="text-xs font-medium">Messages</span>
+      </button>
+      <button
+        onClick={() => setCurrentView('help')}
+        className={cn(
+          "flex flex-col items-center gap-1 px-4",
+          currentView === 'help' ? "text-[#4169E1]" : "text-gray-400"
+        )}
+      >
+        <HelpCircle className="w-6 h-6" />
+        <span className="text-xs font-medium">Help</span>
+      </button>
+    </div>
+  );
 
   const renderMessages = () => (
     <div className="flex-1 overflow-auto p-4">
@@ -363,86 +427,25 @@ const LiveChat: React.FC = () => {
     }
   };
 
-  return (
-    <>
-      {/* Chat Button */}
+  if (!isOpen) {
+    return (
       <Button
         onClick={() => setIsOpen(true)}
-        className={cn(
-          "fixed bottom-6 right-6 rounded-full p-4 shadow-lg",
-          "bg-yellow-500 hover:bg-yellow-600",
-          "transition-transform duration-200 ease-in-out",
-          "z-50"
-        )}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-[#4169E1] hover:bg-[#3154c4] flex items-center justify-center shadow-lg transition-colors"
       >
-        <MessageCircle className="h-6 w-6 text-white" />
+        <MessageSquare className="w-7 h-7 text-white" />
       </Button>
+    );
+  }
 
-      {/* Chat Window */}
-      {isOpen && (
-        <div className={cn(
-          "fixed bottom-24 right-6 w-96 rounded-lg shadow-xl",
-          "bg-white border border-gray-200",
-          "flex flex-col",
-          "z-50",
-          "max-h-[600px]"
-        )}>
-          {renderView()}
-          
-          {/* Bottom Navigation */}
-          <div className="border-t grid grid-cols-3 bg-white">
-            <button
-              onClick={() => {
-                setCurrentView('home');
-                setSelectedTopic(null);
-              }}
-              className={cn(
-                "flex flex-col items-center py-3 px-4 gap-1",
-                "text-sm font-medium",
-                currentView === 'home' 
-                  ? "text-yellow-500" 
-                  : "text-gray-500 hover:text-yellow-500"
-              )}
-            >
-              <HomeIcon size={20} />
-              <span>Home</span>
-            </button>
-            <button
-              onClick={() => {
-                setCurrentView('messages');
-                setSelectedTopic(null);
-              }}
-              className={cn(
-                "flex flex-col items-center py-3 px-4 gap-1",
-                "text-sm font-medium",
-                currentView === 'messages' 
-                  ? "text-yellow-500" 
-                  : "text-gray-500 hover:text-yellow-500"
-              )}
-            >
-              <MessageCircleIcon size={20} />
-              <span>Messages</span>
-            </button>
-            <button
-              onClick={() => {
-                setCurrentView('help');
-                setSelectedTopic(null);
-              }}
-              className={cn(
-                "flex flex-col items-center py-3 px-4 gap-1",
-                "text-sm font-medium",
-                currentView === 'help' 
-                  ? "text-yellow-500" 
-                  : "text-gray-500 hover:text-yellow-500"
-              )}
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span>Help</span>
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+  return (
+    <div className="fixed bottom-6 right-6 w-[380px] h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
+      {renderHeader()}
+      <div className="flex-1 overflow-y-auto bg-white">
+        {renderEmptyState()}
+      </div>
+      {renderBottomNav()}
+    </div>
   );
 };
 
