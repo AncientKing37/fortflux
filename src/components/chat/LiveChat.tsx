@@ -37,9 +37,24 @@ const LiveChat: React.FC = () => {
   } = useSocket();
 
   const supportAgents = [
-    { id: 1, name: 'John', avatar: '/avatars/support-1.jpg' },
-    { id: 2, name: 'Mike', avatar: '/avatars/support-2.jpg' },
-    { id: 3, name: 'Sarah', avatar: '/avatars/support-3.jpg' },
+    { 
+      id: 1, 
+      name: 'John', 
+      avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+      status: 'online'
+    },
+    { 
+      id: 2, 
+      name: 'Emma', 
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+      status: 'online'
+    },
+    { 
+      id: 3, 
+      name: 'Alex', 
+      avatar: 'https://randomuser.me/api/portraits/men/47.jpg',
+      status: 'online'
+    }
   ];
 
   const helpTopics = [
@@ -440,26 +455,58 @@ const LiveChat: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 right-6 w-[380px] h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
-      <div className="bg-[#4169E1] text-white p-6 relative">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold font-['Montserrat']">ELITE MP</h1>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-white hover:text-gray-200 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+      <div className="bg-[#4169E1] text-white p-6 relative overflow-hidden">
+        {/* Decorative background curve */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-24 bg-[#5179F2] rounded-[100%] transform translate-y-12"
+          style={{
+            borderRadius: '100% 100% 0 0',
+            width: '150%',
+            marginLeft: '-25%'
+          }}
+        />
+
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <h1 
+              className="text-3xl font-extrabold tracking-wide"
+              style={{ 
+                fontFamily: 'Montserrat, sans-serif',
+                letterSpacing: '0.05em'
+              }}
+            >
+              ELITE MP
+            </h1>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1 mb-4">
+            {supportAgents.map((agent, index) => (
+              <div key={agent.id} className="relative">
+                <Avatar 
+                  className={cn(
+                    "w-10 h-10 border-2 border-white/90 shadow-md transition-transform hover:scale-105",
+                    index > 0 && "-ml-3"
+                  )}
+                >
+                  <AvatarImage src={agent.avatar} />
+                  <AvatarFallback>{agent.name[0]}</AvatarFallback>
+                </Avatar>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
+              </div>
+            ))}
+          </div>
+
+          <h2 className="text-2xl font-semibold mb-2">
+            Hey there <span className="wave">👋</span>
+          </h2>
+          <p className="text-lg text-white/90">How can we help?</p>
         </div>
-        <div className="flex items-center gap-2 mb-2">
-          {supportAgents.map((agent, index) => (
-            <Avatar key={agent.id} className={cn("w-8 h-8 border-2 border-white", index > 0 && "-ml-4")}>
-              <AvatarImage src={agent.avatar} />
-              <AvatarFallback>{agent.name[0]}</AvatarFallback>
-            </Avatar>
-          ))}
-        </div>
-        <h2 className="text-2xl font-semibold mb-1">Hey there 👋</h2>
-        <p className="text-lg">How can we help?</p>
       </div>
 
       <div className="flex-1 overflow-y-auto bg-white">
