@@ -26,7 +26,7 @@ import SupportDashboard from './pages/dashboard/SupportDashboard';
 import UserManagement from './pages/dashboard/UserManagement';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import FloatingSupportChat from './components/support/FloatingSupportChat';
+import LiveChat from './components/chat/LiveChat';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EscrowHome from './pages/dashboard/EscrowHome';
 import SupportHome from './pages/dashboard/SupportHome';
@@ -305,7 +305,7 @@ function App() {
                   } 
                 />
               </Routes>
-              <FloatingSupportChat />
+              <LiveChat />
               <Toaster />
             </BrowserRouter>
           </SocketProvider>

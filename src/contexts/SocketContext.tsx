@@ -1,22 +1,77 @@
-
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 import { useUser } from './UserContext';
-import { SocketContextType } from './socket/socketTypes';
-import { useSocketConnection } from './socket/useSocketConnection';
 import { socketUtils } from './socket/socketContext.utils';
 
-const SocketContext = createContext<SocketContextType | undefined>(undefined);
+interface SocketContextType {
+  socket: Socket | null;
+  connected: boolean;
+  joinRoom: (roomId: string) => void;
+  leaveRoom: (roomId: string) => void;
+  requestEscrow: (transactionId: string, listingId: string, sellerUsername: string) => Promise<boolean>;
+  releaseFunds: (transactionId: string) => Promise<boolean>;
+  refundBuyer: (transactionId: string) => Promise<boolean>;
+  sendReminderToParties: (transactionId: string, buyerId: string, sellerId: string) => Promise<boolean>;
+  sendSupportMessage: (message: string, roomId: string) => Promise<boolean>;
+  sendSupportTypingIndicator: (isTyping: boolean, roomId: string) => void;
+  checkSupportAvailability: () => void;
+}
 
-export const SocketProvider = ({ children }: { children: ReactNode }) => {
+const SocketContext = createContext<SocketContextType>({
+  socket: null,
+  connected: false,
+  joinRoom: () => {},
+  leaveRoom: () => {},
+  requestEscrow: async () => false,
+  releaseFunds: async () => false,
+  refundBuyer: async () => false,
+  sendReminderToParties: async () => false,
+  sendSupportMessage: async () => false,
+  sendSupportTypingIndicator: () => {},
+  checkSupportAvailability: () => {},
+});
+
+export const useSocket = () => useContext(SocketContext);
+
+export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useUser();
-  const { socket, connected } = useSocketConnection(user);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [connected, setConnected] = useState(false);
+
+  useEffect(() => {
+    // Initialize socket connection
+    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001', {
+      autoConnect: true,
+      reconnection: true,
+    });
+
+    socketInstance.on('connect', () => {
+      console.log('Socket connected');
+      setConnected(true);
+    });
+
+    socketInstance.on('disconnect', () => {
+      console.log('Socket disconnected');
+      setConnected(false);
+    });
+
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, []);
 
   const socketJoinRoom = (roomId: string) => {
-    socketUtils.joinRoom(socket, connected, roomId);
+    if (socket && connected) {
+      socket.emit('join_room', roomId);
+    }
   };
 
   const socketLeaveRoom = (roomId: string) => {
-    socketUtils.leaveRoom(socket, connected, roomId);
+    if (socket && connected) {
+      socket.emit('leave_room', roomId);
+    }
   };
 
   const socketRequestEscrow = async (transactionId: string, listingId: string, sellerUsername: string) => {
@@ -66,10 +121,4 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useSocket = () => {
-  const context = useContext(SocketContext);
-  if (context === undefined) {
-    throw new Error('useSocket must be used within a SocketProvider');
-  }
-  return context;
-};
+export default SocketProvider;
