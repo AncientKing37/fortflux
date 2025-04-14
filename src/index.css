@@ -1,0 +1,223 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 260 84% 53.3%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 158.1 100% 50%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 221.2 83.2% 53.3%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 260 84% 53.3%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 224.3 76.3% 48%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 158.1 100% 50%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  h1 {
+    @apply text-2xl font-bold md:text-3xl;
+  }
+  
+  h2 {
+    @apply text-xl font-semibold md:text-2xl;
+  }
+  
+  h3 {
+    @apply text-lg font-medium md:text-xl;
+  }
+  
+  p {
+    @apply text-base;
+  }
+}
+
+@layer components {
+  .marketplace-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-card overflow-hidden transition-all duration-300 hover:shadow-card-hover;
+  }
+  
+  .marketplace-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-marketplace;
+  }
+  
+  /* Mobile optimizations */
+  .mobile-bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 z-50 flex justify-around items-center py-2 px-1 animate-slide-up;
+  }
+  
+  .mobile-nav-item {
+    @apply flex flex-col items-center justify-center py-1 px-2 text-xs w-full;
+  }
+  
+  .mobile-nav-icon {
+    @apply h-5 w-5 mb-1 flex-shrink-0;
+  }
+  
+  /* Responsive paddings */
+  .responsive-container {
+    @apply px-4 md:px-6 lg:px-8;
+  }
+  
+  .responsive-section {
+    @apply py-4 md:py-6 lg:py-8;
+  }
+
+  /* Profile card styling */
+  .profile-card {
+    @apply rounded-xl bg-white dark:bg-gray-800 shadow-card transition-all duration-300 hover:shadow-card-hover p-4 md:p-6;
+  }
+
+  /* Button enhancements */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap truncate px-4 py-2 rounded-md text-sm font-medium;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap truncate px-4 py-2 rounded-md text-sm font-medium;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 whitespace-nowrap truncate px-4 py-2 rounded-md text-sm font-medium;
+  }
+
+  .btn-ghost {
+    @apply text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 whitespace-nowrap truncate px-3 py-1.5 rounded-md text-sm font-medium;
+  }
+
+  .btn-destructive {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors flex items-center justify-center gap-2 whitespace-nowrap truncate px-4 py-2 rounded-md text-sm font-medium;
+  }
+
+  /* Form field styling */
+  .form-field {
+    @apply mb-4;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary/50 focus:border-primary transition-colors;
+  }
+
+  /* Dropdown styling */
+  .dropdown-content {
+    @apply z-20 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden;
+  }
+
+  /* Card enhancements */
+  .content-card {
+    @apply rounded-xl bg-white dark:bg-gray-800 shadow-card p-4 md:p-6 transition-all duration-300;
+  }
+  
+  .grid-card {
+    @apply rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-card hover:shadow-card-hover transition-all duration-300;
+  }
+  
+  /* Avatar with contrast */
+  .avatar-ring {
+    @apply ring-2 ring-white dark:ring-gray-800 ring-offset-1;
+  }
+  
+  /* Badge styling */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding-bottom: 5rem; /* Space for bottom navigation */
+  }
+  
+  .has-mobile-nav {
+    padding-bottom: 5rem;
+  }
+}
