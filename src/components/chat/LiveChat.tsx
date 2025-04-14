@@ -25,6 +25,7 @@ const LiveChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentView, setCurrentView] = useState<ChatView>('messages');
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
@@ -105,6 +106,11 @@ const LiveChat: React.FC = () => {
   ];
 
   const socketRef = useRef(io('http://localhost:3000'));
+
+  const filteredHelpTopics = helpTopics.filter(topic => 
+    topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    topic.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     if (connected) {
@@ -281,13 +287,13 @@ const LiveChat: React.FC = () => {
           </div>
           <h3 className="text-xl font-semibold mb-2">No messages</h3>
           <p className="text-gray-500 text-sm mb-8">Messages from the team will be shown here</p>
-          <Button 
-            className="bg-[#4169E1] hover:bg-[#3154c4] text-white font-medium py-3 px-6 rounded-full flex items-center gap-2 transition-colors"
+          <div 
             onClick={() => setCurrentView('support')}
+            className="bg-[#4169E1] hover:bg-[#3154c4] text-white font-medium py-3 px-6 rounded-full flex items-center gap-2 transition-colors cursor-pointer"
           >
             Send us a message
             <ChevronRight className="w-4 h-4" />
-          </Button>
+          </div>
         </div>
       ) : (
         <div className="flex-1 overflow-auto p-4">
@@ -408,6 +414,151 @@ const LiveChat: React.FC = () => {
           </Button>
         </div>
       </form>
+    </>
+  );
+
+  const renderHelp = () => (
+    <>
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <h2 className="text-xl font-semibold">Help Center</h2>
+        </div>
+        <button
+          onClick={handleClose}
+          className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="p-4">
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Input
+            type="text"
+            placeholder="Search help articles..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 w-full"
+          />
+        </div>
+
+        <div className="space-y-3">
+          {filteredHelpTopics.map((topic, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedTopic(topic.title)}
+              className="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+              <h4 className="font-medium text-gray-900 mb-1">{topic.title}</h4>
+              <p className="text-sm text-gray-600 line-clamp-2">{topic.preview}</p>
+            </button>
+          ))}
+          {filteredHelpTopics.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No help articles found matching "{searchQuery}"</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
+  const renderHomeView = () => (
+    <>
+      <div className="bg-[#4169E1] text-white p-6 relative overflow-hidden">
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        {/* Decorative background curve */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-24 bg-[#5179F2] rounded-[100%] transform translate-y-12"
+          style={{
+            borderRadius: '100% 100% 0 0',
+            width: '150%',
+            marginLeft: '-25%'
+          }}
+        />
+
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <h1 
+              className="text-3xl font-extrabold tracking-wide"
+              style={{ 
+                fontFamily: 'Montserrat, sans-serif',
+                letterSpacing: '0.05em'
+              }}
+            >
+              ELITE MP
+            </h1>
+            <button
+              onClick={handleClose}
+              className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1 mb-4">
+            {supportAgents.map((agent, index) => (
+              <div key={agent.id} className="relative">
+                <Avatar 
+                  className={cn(
+                    "w-10 h-10 border-2 border-white/90 shadow-md transition-transform hover:scale-105",
+                    index > 0 && "-ml-3"
+                  )}
+                >
+                  <AvatarImage src={agent.avatar} />
+                  <AvatarFallback>{agent.name[0]}</AvatarFallback>
+                </Avatar>
+                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
+              </div>
+            ))}
+          </div>
+
+          <h2 className="text-2xl font-semibold mb-2">
+            Hey there <span className="wave">👋</span>
+          </h2>
+          <p className="text-lg text-white/90">How can we help?</p>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto bg-white">
+        <div className="p-4">
+          <div 
+            onClick={() => {
+              setCurrentView('support');
+            }}
+            className="w-full mb-6 bg-white text-[#4169E1] border border-[#4169E1] hover:bg-[#4169E1] hover:text-white transition-colors py-6 text-lg font-medium rounded-xl cursor-pointer flex items-center justify-center"
+          >
+            Send us a message
+          </div>
+
+          <div className="space-y-4">
+            {helpTopics.map((topic, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedTopic(topic.title)}
+                className="w-full text-left p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                <h4 className="font-medium text-gray-900 mb-1">{topic.title}</h4>
+                <p className="text-sm text-gray-600 line-clamp-2">{topic.preview}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </>
   );
 
