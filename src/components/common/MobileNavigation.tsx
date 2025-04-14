@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -9,15 +8,25 @@ import {
   FileText,
   Shield,
   DollarSign,
-  HeadphonesIcon
+  HeadphonesIcon,
+  Menu,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/contexts/UserContext';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const MobileNavigation: React.FC = () => {
   const location = useLocation();
   const { user } = useUser();
+  const [open, setOpen] = useState(false);
   
   if (!user) return null;
   
@@ -101,26 +110,69 @@ const MobileNavigation: React.FC = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-950 shadow-lg border-t border-gray-200 dark:border-gray-800 z-50 md:hidden">
       <div className="flex justify-around items-center h-16">
-        {routes.map((route) => (
+        {routes.slice(0, 3).map((route) => (
           <Link 
             key={route.path}
             to={route.path}
             className={cn(
               "flex flex-col items-center justify-center w-full h-full px-1",
               location.pathname === route.path
-                ? "text-primary"
+                ? "text-yellow-500"
                 : "text-gray-500 dark:text-gray-400"
             )}
           >
             <route.icon className={cn(
               "h-5 w-5 mb-1",
               location.pathname === route.path
-                ? "text-primary"
+                ? "text-yellow-500"
                 : "text-gray-500 dark:text-gray-400"
             )} />
             <span className="text-xs truncate max-w-[80px] text-center">{route.label}</span>
           </Link>
         ))}
+        
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={cn(
+                "flex flex-col items-center justify-center w-full h-full",
+                open ? "text-yellow-500" : "text-gray-500 dark:text-gray-400"
+              )}
+            >
+              {open ? (
+                <X className="h-5 w-5 mb-1" />
+              ) : (
+                <Menu className="h-5 w-5 mb-1" />
+              )}
+              <span className="text-xs">More</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[80vh] bg-white dark:bg-gray-950 p-0">
+            <SheetHeader className="p-4 border-b border-gray-200 dark:border-gray-800">
+              <SheetTitle className="text-left text-yellow-500">Menu</SheetTitle>
+            </SheetHeader>
+            <div className="overflow-y-auto">
+              {routes.map((route) => (
+                <Link
+                  key={route.path}
+                  to={route.path}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    "flex items-center px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800",
+                    location.pathname === route.path
+                      ? "bg-yellow-500/10 text-yellow-500"
+                      : "text-gray-700 dark:text-gray-300"
+                  )}
+                >
+                  <route.icon className="h-5 w-5 mr-3" />
+                  <span>{route.label}</span>
+                </Link>
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="text-xl md:text-2xl font-bold text-yellow-500">
-            EL1TE MARKETPLACE
+            EL1TE MP
           </Link>
         </div>
 

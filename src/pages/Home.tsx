@@ -86,7 +86,7 @@ const Home: React.FC = () => {
        <section className="py-20 bg-white">
          <div className="container mx-auto px-4">
            <div className="text-center mb-16">
-             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose EL1TE MARKETPLACE?</h2>
+             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose EL1TE MP?</h2>
              <p className="text-gray-600 max-w-2xl mx-auto">The safest platform to buy and sell Fortnite accounts with confidence</p>
            </div>
 
@@ -142,7 +142,7 @@ const Home: React.FC = () => {
          <div className="container mx-auto px-4 relative z-10 text-center">
            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">Ready to Get Started?</h2>
            <p className="text-xl mb-10 max-w-2xl mx-auto text-gray-600">
-             Whether you're looking to buy a rare Fortnite account or sell your own, EL1TE MARKETPLACE makes it safe and simple.
+             Whether you're looking to buy a rare Fortnite account or sell your own, EL1TE MP makes it safe and simple.
            </p>
            <div className="flex flex-wrap justify-center gap-4">
              <Link to="/signup">
