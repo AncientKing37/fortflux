@@ -41,8 +41,12 @@ const Navbar: React.FC = () => {
     <header className="bg-black border-b border-yellow-500/20 sticky top-0 z-50 transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center">
-          <Link to="/" className="text-xl md:text-2xl font-bold text-yellow-500">
-            EL1TE MP
+          <Link 
+            to="/" 
+            className="text-2xl font-bold text-yellow-500 font-bungee-spice hover:text-yellow-600 transition-colors"
+            style={{ fontFamily: 'BungeeSpice' }}
+          >
+            ELITE MP
           </Link>
         </div>
 

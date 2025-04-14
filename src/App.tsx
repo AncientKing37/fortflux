@@ -59,6 +59,8 @@ import Disclaimer from './pages/Disclaimer';
 // Create a client
 const queryClient = new QueryClient();
 
+import './styles/fonts.css';  // Import our custom fonts
+
 function App() {
   return (
     <HelmetProvider>

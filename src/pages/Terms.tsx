@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -6,8 +5,8 @@ const Terms: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Terms of Service | EL1TE MARKETPLACE</title>
-        <meta name="description" content="Terms and conditions for using the EL1TE MARKETPLACE platform." />
+        <title>Terms of Service | ELITE MARKETPLACE</title>
+        <meta name="description" content="Terms and conditions for using the ELITE MARKETPLACE platform." />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">
@@ -25,7 +24,7 @@ const Terms: React.FC = () => {
             <p className="text-sm text-gray-500 mb-6">Last updated: April 14, 2025</p>
             
             <h2 className="text-2xl font-bold mb-4">1. Introduction</h2>
-            <p>Welcome to EL1TE MARKETPLACE ("we," "our," or "us"). These Terms of Service ("Terms") govern your access to and use of our website, services, and applications (collectively, the "Platform"). By accessing or using our Platform, you agree to be bound by these Terms.</p>
+            <p>Welcome to ELITE MARKETPLACE ("we," "our," or "us"). These Terms of Service ("Terms") govern your access to and use of our website, services, and applications (collectively, the "Platform"). By accessing or using our Platform, you agree to be bound by these Terms.</p>
             
             <h2 className="text-2xl font-bold mt-8 mb-4">2. Account Registration</h2>
             <p>To access certain features of the Platform, you must register for an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete. You are responsible for safeguarding your password and for all activities that occur under your account.</p>

@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Column 1 - Logo and Info */}
             <div className="col-span-1 md:col-span-1">
-              <Link to="/" className="text-2xl font-bold text-yellow-500 mb-4 inline-block">EL1TE MP</Link>
+              <Link to="/" className="text-2xl font-bold text-yellow-500 mb-4 inline-block">ELITE MP</Link>
               <p className="text-gray-400 mt-2">
                 The secure marketplace for buying and selling Fortnite accounts.
               </p>
@@ -48,9 +48,9 @@ const Footer: React.FC = () => {
           
           {/* Copyright */}
           <div className="mt-8 pt-8 border-t border-yellow-500/20 text-center text-gray-500">
-            <p>© {new Date().getFullYear()} EL1TE MP. All rights reserved.</p>
-            <p className="mt-2 text-sm">
-              Disclaimer: EL1TE MP is not affiliated with Epic Games or Fortnite. This is a demo project.
+            <p>© {new Date().getFullYear()} ELITE MP. All rights reserved.</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Disclaimer: ELITE MP is not affiliated with Epic Games or Fortnite. This is a demo project.
             </p>
           </div>
         </div>

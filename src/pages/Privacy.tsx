@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -6,8 +5,8 @@ const Privacy: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Privacy Policy | EL1TE MARKETPLACE</title>
-        <meta name="description" content="Privacy policy for EL1TE MARKETPLACE, explaining how we collect, use, and protect your personal information." />
+        <title>Privacy Policy | ELITE MARKETPLACE</title>
+        <meta name="description" content="Privacy policy for ELITE MARKETPLACE, explaining how we collect, use, and protect your personal information." />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">
@@ -25,7 +24,7 @@ const Privacy: React.FC = () => {
             <p className="text-sm text-gray-500 mb-6">Last updated: April 14, 2025</p>
             
             <h2 className="text-2xl font-bold mb-4">1. Introduction</h2>
-            <p>At EL1TE MARKETPLACE, we respect your privacy and are committed to protecting your personal data. This Privacy Policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.</p>
+            <p>At ELITE MARKETPLACE, we respect your privacy and are committed to protecting your personal data. This Privacy Policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.</p>
             
             <h2 className="text-2xl font-bold mt-8 mb-4">2. Information We Collect</h2>
             <p><strong>Personal Data:</strong> We may collect, use, store and transfer different kinds of personal data about you, including:</p>
