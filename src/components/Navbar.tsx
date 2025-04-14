@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
               alt="ELITE MP Logo" 
               className="h-8 w-auto"
             />
-            <span className="text-2xl font-extrabold tracking-wider text-yellow-500 hover:text-yellow-600 transition-colors font-BungeeSpice">
+            <span className="text-2xl font-extrabold tracking-wider text-yellow-500 hover:text-yellow-600 transition-colors font-bungee-spice">
               ELITE MP
             </span>
           </Link>
