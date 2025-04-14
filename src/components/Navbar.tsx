@@ -40,12 +40,16 @@ const Navbar: React.FC = () => {
   return (
     <header className="bg-black border-b border-yellow-500/20 sticky top-0 z-50 transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <Link 
-            to="/" 
-            className="text-2xl font-extrabold tracking-wider text-yellow-500 hover:text-yellow-600 transition-colors font-montserrat"
-          >
-            ELITE MP
+        <div className="flex items-center gap-4">
+          <Link to="/" className="flex items-center gap-4">
+            <img 
+              src="/logo.jpg" 
+              alt="ELITE MP Logo" 
+              className="h-8 w-auto"
+            />
+            <span className="text-2xl font-extrabold tracking-wider text-yellow-500 hover:text-yellow-600 transition-colors font-BungeeSpice">
+              ELITE MP
+            </span>
           </Link>
         </div>
 
