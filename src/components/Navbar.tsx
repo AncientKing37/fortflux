@@ -38,29 +38,29 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="bg-black border-b border-yellow-500/20 sticky top-0 z-50 transition-colors duration-200">
+    <header className="bg-white border-b border-yellow-500/20 sticky top-0 z-50 transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-4">
             <img 
               src="/logo.png" 
-              alt="ELITE MP Logo" 
+              alt="FortFlux Logo" 
               className="h-8 w-auto"
             />
-            <span className="text-2xl font-extrabold tracking-wider text-yellow-500 hover:text-yellow-600 transition-colors font-bungee-spice">
-              ELITE MP
+            <span className="text-2xl font-extrabold tracking-wider text-black hover:text-yellow-600 transition-colors font-bungee-spice">
+              FortFlux
             </span>
           </Link>
         </div>
 
         <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-          <Link to="/" className={`text-gray-300 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/' ? 'text-yellow-500 font-semibold' : ''}`}>
+          <Link to="/" className={`text-gray-700 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/' ? 'text-yellow-500 font-semibold' : ''}`}>
             Home
           </Link>
-          <Link to="/marketplace" className={`text-gray-300 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/marketplace' ? 'text-yellow-500 font-semibold' : ''}`}>
+          <Link to="/marketplace" className={`text-gray-700 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/marketplace' ? 'text-yellow-500 font-semibold' : ''}`}>
             Marketplace
           </Link>
-          <Link to="/how-it-works" className={`text-gray-300 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/how-it-works' ? 'text-yellow-500 font-semibold' : ''}`}>
+          <Link to="/how-it-works" className={`text-gray-700 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/how-it-works' ? 'text-yellow-500 font-semibold' : ''}`}>
             How It Works
           </Link>
         </nav>
@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <NotificationBell />
               
-              <span className="text-gray-300 font-medium hidden md:block">
+              <span className="text-gray-700 font-medium hidden md:block">
                 {user.username}
               </span>
               
@@ -85,11 +85,11 @@ const Navbar: React.FC = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 py-2 bg-black border border-yellow-500/50">
+                <DropdownMenuContent align="end" className="w-56 py-2 bg-white border border-yellow-500/50">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col">
-                      <span className="font-semibold text-white">{user.username}</span>
-                      <span className="text-xs text-gray-400">{user.email}</span>
+                      <span className="font-semibold text-gray-900">{user.username}</span>
+                      <span className="text-xs text-gray-600">{user.email}</span>
                       <span className="text-xs font-medium mt-1 capitalize bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full w-fit">
                         {user.role}
                       </span>
@@ -97,34 +97,34 @@ const Navbar: React.FC = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-yellow-500/20" />
                   <DropdownMenuItem asChild className="cursor-pointer focus:bg-yellow-500/20 focus:text-yellow-500">
-                    <Link to={dashboardLink} className="flex w-full items-center text-gray-300">
+                    <Link to={dashboardLink} className="flex w-full items-center text-gray-700">
                       {isAdminRole ? (
                         <>
-                          <Shield className="mr-2 h-4 w-4 text-gray-400" />
+                          <Shield className="mr-2 h-4 w-4 text-gray-600" />
                           Admin Dashboard
                         </>
                       ) : (
                         <>
-                          <User className="mr-2 h-4 w-4 text-gray-400" />
+                          <User className="mr-2 h-4 w-4 text-gray-600" />
                           Dashboard
                         </>
                       )}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer focus:bg-yellow-500/20 focus:text-yellow-500">
-                    <Link to={isAdminRole ? "/admin/disputes" : "/dashboard/messages"} className="flex w-full items-center text-gray-300">
-                      <ShoppingCart className="mr-2 h-4 w-4 text-gray-400" />
+                    <Link to={isAdminRole ? "/admin/disputes" : "/dashboard/messages"} className="flex w-full items-center text-gray-700">
+                      <ShoppingCart className="mr-2 h-4 w-4 text-gray-600" />
                       {isAdminRole ? "Disputes" : (user.role === 'buyer' ? 'My Purchases' : 'My Listings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer focus:bg-yellow-500/20 focus:text-yellow-500">
-                    <Link to="/dashboard/settings" className="flex w-full items-center text-gray-300">
-                      <Settings className="mr-2 h-4 w-4 text-gray-400" />
+                    <Link to="/dashboard/settings" className="flex w-full items-center text-gray-700">
+                      <Settings className="mr-2 h-4 w-4 text-gray-600" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-yellow-500/20" />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-950/50">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
                   </DropdownMenuItem>
@@ -142,40 +142,40 @@ const Navbar: React.FC = () => {
             </div>
           )}
 
-          <Button variant="ghost" size="icon" className="md:hidden text-yellow-500 hover:bg-yellow-500/20" onClick={toggleMobileMenu}>
+          <Button variant="ghost" size="icon" className="md:hidden text-gray-700 hover:bg-yellow-500/20" onClick={toggleMobileMenu}>
             <Menu className="h-6 w-6" />
           </Button>
         </div>
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden bg-black border-t border-yellow-500/20 animate-fade-in">
+        <div className="md:hidden bg-white border-t border-yellow-500/20 animate-fade-in">
           <div className="container mx-auto px-4 py-2 flex flex-col">
-            <Link to="/" className="py-3 text-gray-300 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
               Home
             </Link>
-            <Link to="/marketplace" className="py-3 text-gray-300 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/marketplace" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
               Marketplace
             </Link>
-            <Link to="/how-it-works" className="py-3 text-gray-300 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/how-it-works" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
               How It Works
             </Link>
             {user && (
               <>
-                <Link to={dashboardLink} className="py-3 text-gray-300 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+                <Link to={dashboardLink} className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
                   {isAdminRole ? "Admin Dashboard" : "Dashboard"}
                 </Link>
-                <Link to="/dashboard/settings" className="py-3 text-gray-300 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/dashboard/settings" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
                   Settings
                 </Link>
               </>
             )}
             {!user && (
               <>
-                <Link to="/login" className="py-3 text-gray-300 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/login" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
                   Login
                 </Link>
-                <Link to="/signup" className="py-3 text-gray-300 hover:text-yellow-500" onClick={() => setMobileMenuOpen(false)}>
+                <Link to="/signup" className="py-3 text-gray-700 hover:text-yellow-500" onClick={() => setMobileMenuOpen(false)}>
                   Sign up
                 </Link>
               </>
