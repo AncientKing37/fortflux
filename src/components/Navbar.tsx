@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-4">
             <img 
-              src="/logo.jpg" 
+              src="/logo.png" 
               alt="ELITE MP Logo" 
               className="h-8 w-auto"
             />
