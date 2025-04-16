@@ -40,7 +40,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     // Initialize socket connection
-    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001', {
+    const socketInstance = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001', {
       autoConnect: true,
       reconnection: true,
     });
@@ -99,23 +99,25 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const socketCheckSupportAvailability = () => {
-    socketUtils.checkSupportAvailability(socket, connected);
+    socketUtils.checkSupportAvailability(socket, connected, user);
   };
 
   return (
-    <SocketContext.Provider value={{ 
-      socket, 
-      connected, 
-      joinRoom: socketJoinRoom, 
-      leaveRoom: socketLeaveRoom,
-      requestEscrow: socketRequestEscrow,
-      releaseFunds: socketReleaseFunds,
-      refundBuyer: socketRefundBuyer,
-      sendReminderToParties: socketSendReminderToParties,
-      sendSupportMessage: socketSendSupportMessage,
-      sendSupportTypingIndicator: socketSendSupportTypingIndicator,
-      checkSupportAvailability: socketCheckSupportAvailability
-    }}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        connected,
+        joinRoom: socketJoinRoom,
+        leaveRoom: socketLeaveRoom,
+        requestEscrow: socketRequestEscrow,
+        releaseFunds: socketReleaseFunds,
+        refundBuyer: socketRefundBuyer,
+        sendReminderToParties: socketSendReminderToParties,
+        sendSupportMessage: socketSendSupportMessage,
+        sendSupportTypingIndicator: socketSendSupportTypingIndicator,
+        checkSupportAvailability: socketCheckSupportAvailability,
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );

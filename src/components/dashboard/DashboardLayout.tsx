@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
@@ -53,7 +52,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   
   if (!user) {
-    navigate('/login');
+    navigate('/login', { state: { from: location } });
     return null;
   }
 

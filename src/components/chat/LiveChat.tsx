@@ -38,6 +38,10 @@ const LiveChat: React.FC = () => {
     sendMessage
   } = useSocket();
 
+  // Comment out socket connection for now
+  // const socketRef = useRef(io('http://localhost:3000'));
+  const navigate = useNavigate();
+
   const supportAgents = [
     { 
       id: 1, 
@@ -106,21 +110,8 @@ const LiveChat: React.FC = () => {
     }
   ];
 
-  const socketRef = useRef(io('http://localhost:3000'));
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (connected) {
-      joinRoom('general');
-    }
-
-    return () => {
-      if (connected) {
-        leaveRoom('general');
-      }
-    };
-  }, [connected]);
-
+  // Comment out socket effect for now
+  /*
   useEffect(() => {
     const currentSocket = socketRef.current;
 
@@ -135,6 +126,7 @@ const LiveChat: React.FC = () => {
       currentSocket.disconnect();
     };
   }, []);
+  */
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -151,7 +143,8 @@ const LiveChat: React.FC = () => {
       timestamp: new Date(),
     };
 
-    socketRef.current.emit('send_message', { ...message, room: 'general' });
+    // Comment out socket emit for now
+    // socketRef.current.emit('send_message', { ...message, room: 'general' });
     setMessages(prev => [...prev, message]);
     setNewMessage('');
   };
@@ -355,7 +348,7 @@ const LiveChat: React.FC = () => {
             <AvatarFallback>EM</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold">ELITE MP Support</h3>
+            <h3 className="font-semibold">FortFlux Support</h3>
             <p className="text-sm text-gray-500">The team can also help</p>
           </div>
         </div>
@@ -375,7 +368,7 @@ const LiveChat: React.FC = () => {
                 <AvatarImage src="/logo.png" />
                 <AvatarFallback>EM</AvatarFallback>
               </Avatar>
-              <span className="font-medium">ELITE MP Support</span>
+              <span className="font-medium">FortFlux Support</span>
             </div>
             <p className="text-gray-900">What brings you here today?</p>
           </div>

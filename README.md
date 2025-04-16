@@ -1,4 +1,4 @@
-# ELITE MP - Digital Marketplace
+# FortFlux - Digital Marketplace
 
 A modern, secure marketplace built with React, TypeScript, and Tailwind CSS.
 

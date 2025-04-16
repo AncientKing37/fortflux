@@ -8,8 +8,8 @@ const SellAccount: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>ELITE MP | Sell Your Account</title>
-        <meta name="description" content="Sell your Fortnite account securely on ELITE MP" />
+        <title>FortFlux | Sell Your Account</title>
+        <meta name="description" content="Sell your Fortnite account securely on FortFlux" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">

@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
               alt="FortFlux Logo" 
               className="h-8 w-auto"
             />
-            <span className="text-2xl font-extrabold tracking-wider text-black hover:text-yellow-600 transition-colors font-bungee-spice">
+            <span className="text-2xl font-extrabold tracking-wider text-black hover:text-yellow-600 transition-colors">
               FortFlux
             </span>
           </Link>

@@ -6,8 +6,8 @@ const FAQ: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>ELITE MP | FAQ</title>
-        <meta name="description" content="Frequently Asked Questions about ELITE MP marketplace" />
+        <title>FortFlux | FAQ</title>
+        <meta name="description" content="Frequently Asked Questions about FortFlux marketplace" />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">

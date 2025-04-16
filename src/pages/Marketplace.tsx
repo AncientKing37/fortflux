@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -126,7 +125,7 @@ const Marketplace: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black">
       <Helmet>
         <title>Fortnite Accounts Marketplace</title>
         <meta name="description" content="Browse and buy verified Fortnite accounts with rare skins, battle passes, and more." />
@@ -139,28 +138,30 @@ const Marketplace: React.FC = () => {
       
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row gap-8">
-          <MarketplaceFilters 
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            showFilters={showFilters}
-            setShowFilters={setShowFilters}
-            resetFilters={resetFilters}
-            minSkins={minSkins}
-            setMinSkins={setMinSkins}
-            rarity={rarity}
-            setRarity={setRarity}
-            hasBattlePass={hasBattlePass}
-            setHasBattlePass={setHasBattlePass}
-            dateRange={dateRange}
-            setDateRange={setDateRange}
-          />
+          <div className="md:sticky md:top-4 h-fit">
+            <MarketplaceFilters 
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              resetFilters={resetFilters}
+              minSkins={minSkins}
+              setMinSkins={setMinSkins}
+              rarity={rarity}
+              setRarity={setRarity}
+              hasBattlePass={hasBattlePass}
+              setHasBattlePass={setHasBattlePass}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+            />
+          </div>
           
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-xl font-bold">Available Accounts</h2>
-              <p className="text-sm text-gray-500">{sortedListings.length} account(s) found</p>
+              <h2 className="text-xl font-bold text-white">Available Accounts</h2>
+              <p className="text-sm text-yellow-400">{sortedListings.length} account(s) found</p>
             </div>
             
             <ListingGrid 

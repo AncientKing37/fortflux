@@ -54,6 +54,9 @@ import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Disclaimer from './pages/Disclaimer';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import AuthCallback from './pages/AuthCallback';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -292,6 +295,34 @@ function App() {
                 {/* Roles & Permissions Routes - without Navbar */}
                 <Route path="/admin/roles" element={<AdminLayout><RolesPermissions /></AdminLayout>} />
                 <Route path="/admin/role-management" element={<AdminLayout><RoleManagement /></AdminLayout>} />
+                
+                {/* Auth Routes - with Navbar and Footer */}
+                <Route 
+                  path="/forgot-password" 
+                  element={
+                    <>
+                      <Navbar />
+                      <ForgotPassword />
+                      <Footer />
+                    </>
+                  } 
+                />
+                
+                <Route 
+                  path="/reset-password" 
+                  element={
+                    <>
+                      <Navbar />
+                      <ResetPassword />
+                      <Footer />
+                    </>
+                  } 
+                />
+                
+                <Route 
+                  path="/auth/callback" 
+                  element={<AuthCallback />} 
+                />
                 
                 {/* Not Found - with Navbar */}
                 <Route 
