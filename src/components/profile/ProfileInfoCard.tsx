@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User } from '@/types';
 import { 
@@ -14,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, Loader2 } from 'lucide-react';
+import EmailChangeDialog from './EmailChangeDialog';
 
 interface ProfileInfoCardProps {
   user: User;
@@ -91,14 +91,18 @@ const ProfileInfoCard: React.FC<ProfileInfoCardProps> = ({
           </div>
           
           <div>
-            <Label htmlFor="email">Email</Label>
+            <div className="flex justify-between items-center mb-1.5">
+              <Label htmlFor="email">Email</Label>
+              <EmailChangeDialog currentEmail={user.email || ''} />
+            </div>
             <Input 
               id="email"
-              value={user.email}
+              value={user.email || 'No email provided'}
               disabled
+              className="bg-gray-50 dark:bg-gray-800/50"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Email cannot be changed
+              Email is managed through your account settings
             </p>
           </div>
           

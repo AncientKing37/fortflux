@@ -57,7 +57,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string): Promise<User | null> => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -67,24 +67,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
 
-      setUser({
+      return {
         id: data.id,
         username: data.username,
-        email: '', // Email is not stored in profiles
-        role: data.role as UserRole,
+        email: data.email,
+        role: data.role,
         avatar: data.avatar_url,
-        description: data.description,
-        createdAt: new Date(data.created_at),
-        vouchCount: data.vouch_count || 0,
         balance: data.balance || 0,
+        description: data.description,
+        vouch_count: data.vouch_count || 0,
         wallet_address: data.wallet_address,
         ltc_wallet_address: data.ltc_wallet_address,
-        preferred_crypto: data.preferred_crypto
-      });
+        preferred_crypto: data.preferred_crypto,
+        favorite_listings: data.favorite_listings || [],
+      };
     } catch (error) {
       console.error('Error fetching user profile:', error);
-    } finally {
-      setLoading(false);
+      return null;
     }
   };
 
@@ -94,6 +93,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -102,13 +102,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
 
       if (data?.user) {
-        fetchUserProfile(data.user.id);
-        return { success: true };
+        const profile = await fetchUserProfile(data.user.id);
+        if (profile) {
+          setUser(profile);
+          setLoading(false);
+          return { success: true };
+        }
       }
 
+      setLoading(false);
       return { success: false, error: 'Login failed' };
     } catch (error: any) {
       console.error('Error logging in:', error);
+      setLoading(false);
       return { success: false, error: error.message || 'Login failed' };
     }
   };
@@ -176,24 +182,26 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase
         .from('profiles')
         .update({
-          username: updates.username || user.username,
-          avatar_url: updates.avatar || user.avatar,
-          description: updates.description || user.description
+          username: updates.username,
+          email: updates.email,
+          description: updates.description,
+          avatar_url: updates.avatar,
+          wallet_address: updates.wallet_address,
+          ltc_wallet_address: updates.ltc_wallet_address,
+          preferred_crypto: updates.preferred_crypto,
         })
         .eq('id', user.id);
 
       if (error) throw error;
 
-      setUser({
-        ...user,
-        username: updates.username || user.username,
-        avatar: updates.avatar || user.avatar,
-        description: updates.description || user.description
-      });
+      const updatedUser = await fetchUserProfile(user.id);
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
 
       return true;
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating user profile:', error);
       return false;
     }
   };

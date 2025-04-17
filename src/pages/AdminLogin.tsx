@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,12 +8,24 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Loader2 } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
-  const { loginAsRole, loading } = useUser();
+  const { loginAsRole, loading, user } = useUser();
   const navigate = useNavigate();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    // If user is already logged in and has admin privileges, redirect to admin dashboard
+    if (user && ['admin', 'escrow', 'support'].includes(user.role)) {
+      navigate('/admin');
+    }
+  }, [user, navigate]);
+
+  // If user is already logged in with admin privileges, don't render the login form
+  if (user && ['admin', 'escrow', 'support'].includes(user.role)) {
+    return null;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +42,7 @@ const AdminLogin: React.FC = () => {
       
       if (success) {
         toast.success("Admin login successful!");
-        navigate('/admin/dashboard');
+        navigate('/admin');
       } else {
         toast.error(error || "Admin login failed. Please check your credentials or permissions.");
       }

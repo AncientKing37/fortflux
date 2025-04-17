@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,16 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useUser } from '@/contexts/UserContext';
 import { supabase } from '@/integrations/supabase/client';
 import WalletSettings from '@/components/profile/WalletSettings';
+import { EmailChangeForm } from '@/components/EmailChangeForm';
 import type { User } from '@/types';
 
 const SettingsPage = () => {
   const { user, updateProfile } = useUser();
   const [username, setUsername] = useState(user?.username || '');
-  const [email, setEmail] = useState('user@example.com');
+  const [email, setEmail] = useState(user?.email || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '');
   const [description, setDescription] = useState(user?.description || '');
   const [isSaving, setIsSaving] = useState(false);
@@ -110,26 +111,45 @@ const SettingsPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex flex-col sm:flex-row gap-6">
-                <div className="flex-1 space-y-4">
-                  <div className="space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_200px] gap-6">
+                <div className="space-y-4">
+                  <div>
                     <Label htmlFor="username">Username</Label>
-                    <Input 
-                      id="username" 
-                      value={username} 
-                      onChange={(e) => setUsername(e.target.value)} 
+                    <Input
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      disabled={isSaving}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Bio</Label>
-                    <Input 
-                      id="description" 
-                      value={description} 
-                      onChange={(e) => setDescription(e.target.value)} 
+
+                  <div>
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      disabled
+                      className="bg-gray-50 dark:bg-gray-800/50"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Email is managed through your account settings
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      disabled={isSaving}
+                      placeholder="Tell others about yourself..."
+                      className="min-h-[100px]"
                     />
                   </div>
                 </div>
-                
+
                 <div className="w-full sm:w-auto flex flex-col items-center space-y-4">
                   <div className="relative">
                     <Avatar className="w-32 h-32">
@@ -204,39 +224,48 @@ const SettingsPage = () => {
         </TabsContent>
         
         <TabsContent value="security">
-          <Card>
-            <CardHeader>
-              <CardTitle>Security Settings</CardTitle>
-              <CardDescription>
-                Manage your email and password settings.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="current-password">Current Password</Label>
-                <Input id="current-password" type="password" placeholder="••••••••" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input id="new-password" type="password" placeholder="••••••••" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm New Password</Label>
-                <Input id="confirm-password" type="password" placeholder="••••••••" />
-              </div>
-              
-              <Button onClick={handleSaveEmail}>
-                Update Email & Password
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Settings</CardTitle>
+                <CardDescription>
+                  Change your email address. You'll need to verify your current email first.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EmailChangeForm />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Password Settings</CardTitle>
+                <CardDescription>
+                  Update your password to keep your account secure.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="current-password">Current Password</Label>
+                  <Input id="current-password" type="password" placeholder="••••••••" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input id="new-password" type="password" placeholder="••••••••" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Input id="confirm-password" type="password" placeholder="••••••••" />
+                </div>
+                
+                <Button onClick={handleSaveEmail}>
+                  Update Password
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
         
         {user?.role === 'seller' && (

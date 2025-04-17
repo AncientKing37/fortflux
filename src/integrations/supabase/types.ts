@@ -192,6 +192,7 @@ export type Database = {
           balance: number | null
           created_at: string
           description: string | null
+          email: string | null
           favorite_listings: string[] | null
           id: string
           ltc_wallet_address: string | null
@@ -206,6 +207,7 @@ export type Database = {
           balance?: number | null
           created_at?: string
           description?: string | null
+          email?: string | null
           favorite_listings?: string[] | null
           id: string
           ltc_wallet_address?: string | null
@@ -220,6 +222,7 @@ export type Database = {
           balance?: number | null
           created_at?: string
           description?: string | null
+          email?: string | null
           favorite_listings?: string[] | null
           id?: string
           ltc_wallet_address?: string | null

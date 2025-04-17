@@ -6,16 +6,17 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { useUser } from '@/contexts/UserContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Login: React.FC = () => {
-  const { login, loading, user } = useUser();
+  const { login, user } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState<'google' | 'discord' | null>(null);
@@ -46,11 +47,11 @@ const Login: React.FC = () => {
         // Navigation will be handled by the useEffect above
       } else {
         toast.error(error || "Login failed. Please check your credentials.");
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("An unexpected error occurred. Please try again.");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -109,16 +110,27 @@ const Login: React.FC = () => {
                   Forgot password?
                 </Link>
               </div>
-              <Input 
-                id="password" 
-                type="password" 
-                placeholder="••••••••" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isSubmitting}
-                autoComplete="current-password"
-                required
-              />
+              <div className="relative">
+                <Input 
+                  id="password" 
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
+                  autoComplete="current-password"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-10 w-10"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -135,9 +147,9 @@ const Login: React.FC = () => {
             <Button 
               type="submit" 
               className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-semibold" 
-              disabled={isSubmitting || loading}
+              disabled={isSubmitting}
             >
-              {isSubmitting || loading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Logging in...
