@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { UserProvider, useUser } from './contexts/UserContext';
 import { Toaster } from './components/ui/sonner';
 import { HelmetProvider } from 'react-helmet-async';
@@ -69,6 +69,7 @@ declare global {
   interface Window {
     $crisp: any[];
     CRISP_WEBSITE_ID: string;
+    CRISP_RUNTIME_CONFIG: any;
   }
 }
 
@@ -79,6 +80,12 @@ function CrispChat() {
     // Initialize Crisp
     window.$crisp = [];
     window.CRISP_WEBSITE_ID = "95284ef6-dfb0-4025-8550-2303429ad87f";
+
+    // Configure mobile settings
+    window.CRISP_RUNTIME_CONFIG = {
+      lock_sound: true,
+      lock_full_view: false // Prevent full screen on mobile
+    };
 
     // Load Crisp script
     (function() {
@@ -97,17 +104,28 @@ function CrispChat() {
       window.$crisp.push(["set", "user:available", true]);
       window.$crisp.push(["set", "chat:available", true]);
 
+      // Mobile-specific settings
+      window.$crisp.push(["set", "position:reverse", true]); // Keep chat on the right side
+      window.$crisp.push(["set", "chat:locked", false]); // Allow minimizing
+      window.$crisp.push(["set", "chat:scroll", true]);
+      
+      // Set smaller size for mobile
+      if (window.innerWidth <= 768) {
+        window.$crisp.push(["set", "chat:container:size", "small"]);
+        window.$crisp.push(["set", "chat:container:styles", [
+          ["height", "60vh"],
+          ["bottom", "80px"],
+          ["right", "10px"],
+          ["width", "90%"],
+          ["max-width", "350px"]
+        ]]);
+      }
+
       // Set theme colors to match your site
       window.$crisp.push(["set", "buttonColor", "#fbbf24"]);
       window.$crisp.push(["set", "theme:colors:brandColor", "#fbbf24"]);
       window.$crisp.push(["set", "theme:colors:conversationButton", "#fbbf24"]);
       window.$crisp.push(["set", "theme:colors:conversationText", "#000000"]);
-
-      // Set chat box position and behavior
-      window.$crisp.push(["set", "position:reverse", true]);
-      window.$crisp.push(["set", "position:placement", "right"]);
-      window.$crisp.push(["set", "chat:autoPopup", false]);
-      window.$crisp.push(["set", "chat:scroll", true]);
 
       // Customize chat appearance
       window.$crisp.push(["set", "website:name", "FortFlux Support"]);
@@ -134,33 +152,23 @@ function CrispChat() {
         }
       }
 
-      // Set up automated triggers for common questions
-      window.$crisp.push(["do", "trigger:run", ["welcome"]]);
-      
-      // Set up quick replies for common questions
-      window.$crisp.push(["on", "message:received", (message: string) => {
-        const lowerMessage = message.toLowerCase();
-        
-        // Payment related
-        if (lowerMessage.includes("payment") || lowerMessage.includes("pay") || lowerMessage.includes("crypto")) {
-          window.$crisp.push(["do", "message:send", ["We accept cryptocurrency payments through NOWPayments, including Bitcoin and Ethereum. Would you like more information about our payment process?"]]);
+      // Add resize listener for responsive behavior
+      window.addEventListener('resize', () => {
+        if (window.innerWidth <= 768) {
+          window.$crisp.push(["set", "chat:container:size", "small"]);
+          window.$crisp.push(["set", "chat:container:styles", [
+            ["height", "60vh"],
+            ["bottom", "80px"],
+            ["right", "10px"],
+            ["width", "90%"],
+            ["max-width", "350px"]
+          ]]);
+        } else {
+          // Reset to default desktop size
+          window.$crisp.push(["set", "chat:container:size", "large"]);
+          window.$crisp.push(["set", "chat:container:styles", []]);
         }
-        
-        // Security/Escrow related
-        else if (lowerMessage.includes("safe") || lowerMessage.includes("secure") || lowerMessage.includes("escrow")) {
-          window.$crisp.push(["do", "message:send", ["Our escrow system ensures safe transactions. The payment is held until you confirm receiving the account. Would you like to know more about our security measures?"]]);
-        }
-        
-        // Selling related
-        else if (lowerMessage.includes("sell") || lowerMessage.includes("selling")) {
-          window.$crisp.push(["do", "message:send", ["To sell an account, you'll need to:\n1) Create a seller account\n2) Verify your identity\n3) Create a detailed listing\n\nWould you like help with any of these steps?"]]);
-        }
-        
-        // Fees related
-        else if (lowerMessage.includes("fee") || lowerMessage.includes("commission")) {
-          window.$crisp.push(["do", "message:send", ["We charge a 10% commission on successful sales. There are no upfront or listing fees. The commission helps us maintain the platform and provide secure escrow services."]]);
-        }
-      }]);
+      });
     }]);
 
     return () => {
@@ -169,9 +177,12 @@ function CrispChat() {
       if (crispScript && crispScript.parentNode) {
         crispScript.parentNode.removeChild(crispScript);
       }
+      // Remove resize listener
+      window.removeEventListener('resize', () => {});
       // Reset Crisp
       window.$crisp = [];
       delete window.CRISP_WEBSITE_ID;
+      delete window.CRISP_RUNTIME_CONFIG;
     };
   }, [user]);
 
@@ -183,7 +194,7 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             {/* Navbar is rendered on all routes except those under /dashboard and /admin */}
             <Routes>
               {/* Public Routes - with Navbar */}
