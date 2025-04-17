@@ -81,13 +81,22 @@ function CrispChat() {
     window.CRISP_WEBSITE_ID = "95284ef6-dfb0-4025-8550-2303429ad87f";
 
     // Load Crisp script
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://client.crisp.chat/l.js';
-    document.head.appendChild(script);
+    (function() {
+      const d = document;
+      const s = d.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = true;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    })();
 
     // Configure Crisp when it's ready
-    script.onload = () => {
+    window.$crisp.push(["safe", true]); // Enable safe mode
+    window.$crisp.push(["do", "chat:show"]);
+    window.$crisp.push(["set", "session:loaded", function() {
+      // Basic configuration
+      window.$crisp.push(["set", "user:available", true]);
+      window.$crisp.push(["set", "chat:available", true]);
+
       // Set theme colors to match your site
       window.$crisp.push(["set", "buttonColor", "#fbbf24"]);
       window.$crisp.push(["set", "theme:colors:brandColor", "#fbbf24"]);
@@ -109,13 +118,13 @@ function CrispChat() {
       if (user) {
         window.$crisp.push(["set", "user:email", user.email]);
         window.$crisp.push(["set", "user:nickname", user.username]);
-        window.$crisp.push(["set", "user:avatar", user.avatar_url || ""]);
+        window.$crisp.push(["set", "user:avatar", user.avatar || ""]);
         
         // Set custom user data
         window.$crisp.push(["set", "session:data", [
           ["Role", user.role],
           ["User ID", user.id],
-          ["Join Date", new Date(user.created_at).toLocaleDateString()],
+          ["Join Date", new Date(user.createdAt).toLocaleDateString()],
           ["Account Status", "Active"]
         ]]);
 
@@ -125,19 +134,34 @@ function CrispChat() {
         }
       }
 
-      // Set up event handlers
-      window.$crisp.push(["on", "chat:opened", () => {
-        console.log("Chat opened");
+      // Set up automated triggers for common questions
+      window.$crisp.push(["do", "trigger:run", ["welcome"]]);
+      
+      // Set up quick replies for common questions
+      window.$crisp.push(["on", "message:received", (message: string) => {
+        const lowerMessage = message.toLowerCase();
+        
+        // Payment related
+        if (lowerMessage.includes("payment") || lowerMessage.includes("pay") || lowerMessage.includes("crypto")) {
+          window.$crisp.push(["do", "message:send", ["We accept cryptocurrency payments through NOWPayments, including Bitcoin and Ethereum. Would you like more information about our payment process?"]]);
+        }
+        
+        // Security/Escrow related
+        else if (lowerMessage.includes("safe") || lowerMessage.includes("secure") || lowerMessage.includes("escrow")) {
+          window.$crisp.push(["do", "message:send", ["Our escrow system ensures safe transactions. The payment is held until you confirm receiving the account. Would you like to know more about our security measures?"]]);
+        }
+        
+        // Selling related
+        else if (lowerMessage.includes("sell") || lowerMessage.includes("selling")) {
+          window.$crisp.push(["do", "message:send", ["To sell an account, you'll need to:\n1) Create a seller account\n2) Verify your identity\n3) Create a detailed listing\n\nWould you like help with any of these steps?"]]);
+        }
+        
+        // Fees related
+        else if (lowerMessage.includes("fee") || lowerMessage.includes("commission")) {
+          window.$crisp.push(["do", "message:send", ["We charge a 10% commission on successful sales. There are no upfront or listing fees. The commission helps us maintain the platform and provide secure escrow services."]]);
+        }
       }]);
-
-      window.$crisp.push(["on", "message:sent", () => {
-        console.log("Message sent");
-      }]);
-
-      window.$crisp.push(["on", "chat:closed", () => {
-        console.log("Chat closed");
-      }]);
-    };
+    }]);
 
     return () => {
       // Cleanup
@@ -149,9 +173,9 @@ function CrispChat() {
       window.$crisp = [];
       delete window.CRISP_WEBSITE_ID;
     };
-  }, [user]); // Add user as dependency to update when user state changes
+  }, [user]);
 
-  return null; // This component doesn't render anything
+  return null;
 }
 
 function App() {
