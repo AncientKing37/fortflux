@@ -1,99 +1,90 @@
-
 import React, { useState } from 'react';
 import { useUser } from '@/contexts/UserContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Star } from 'lucide-react';
-import { createVouch } from '@/contexts/socket/socketActions';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 interface VouchFormProps {
-  transactionId: string;
-  sellerId: string;
-  sellerUsername: string;
-  onVouchCreated?: () => void;
+  userId: string;
+  onVouchSubmitted?: () => void;
 }
 
-const VouchForm: React.FC<VouchFormProps> = ({ 
-  transactionId, 
-  sellerId, 
-  sellerUsername,
-  onVouchCreated 
-}) => {
+const VouchForm: React.FC<VouchFormProps> = ({ userId, onVouchSubmitted }) => {
   const { user } = useUser();
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [comment, setComment] = useState('');
+  const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (rating === 0) {
-      toast.error('Please select a rating');
+
+  const handleSubmit = async () => {
+    if (!user) {
+      toast.error('You must be logged in to vouch for someone');
       return;
     }
-    
-    setIsSubmitting(true);
-    
+
+    if (!message.trim()) {
+      toast.error('Please enter a vouch message');
+      return;
+    }
+
     try {
-      const success = await createVouch(user, transactionId, sellerId, rating, comment);
-      
-      if (success && onVouchCreated) {
-        onVouchCreated();
-      }
+      setIsSubmitting(true);
+
+      // Create the vouch record
+      const { error } = await supabase
+        .from('vouches')
+        .insert({
+          from_user_id: user.id,
+          to_user_id: userId,
+          message: message.trim(),
+        });
+
+      if (error) throw error;
+
+      toast.success('Vouch submitted successfully!');
+      setMessage('');
+      onVouchSubmitted?.();
+
+    } catch (error) {
+      console.error('Error submitting vouch:', error);
+      toast.error('Failed to submit vouch');
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-lg font-medium">Rate your experience with {sellerUsername}</h3>
-        <p className="text-sm text-muted-foreground">Your feedback helps other buyers make informed decisions</p>
-      </div>
-      
-      <div className="flex justify-center">
-        <div className="flex gap-1">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              className="focus:outline-none"
-              onClick={() => setRating(star)}
-              onMouseEnter={() => setHoverRating(star)}
-              onMouseLeave={() => setHoverRating(0)}
-            >
-              <Star
-                className={`h-8 w-8 ${
-                  (hoverRating ? hoverRating >= star : rating >= star)
-                    ? 'text-yellow-500 fill-yellow-500'
-                    : 'text-gray-300'
-                } transition-colors`}
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      <div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Write a Vouch</CardTitle>
+        <CardDescription>Share your experience with this user</CardDescription>
+      </CardHeader>
+      <CardContent>
         <Textarea
-          placeholder="Share your experience with the seller (optional)"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="min-h-[120px]"
+          placeholder="Write your vouch message here..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="min-h-[100px]"
         />
-      </div>
-      
-      <Button 
-        type="submit" 
-        className="w-full"
-        disabled={isSubmitting || rating === 0}
-      >
-        {isSubmitting ? 'Submitting...' : 'Submit Review'}
-      </Button>
-    </form>
+      </CardContent>
+      <CardFooter>
+        <Button
+          className="w-full"
+          onClick={handleSubmit}
+          disabled={isSubmitting || !message.trim() || !user}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            'Submit Vouch'
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { dashboardService } from '@/services/dashboardService';
-import { ShoppingBag, CreditCard, MessageSquare, Store } from 'lucide-react';
+import { ShoppingBag, CreditCard, MessageSquare, Store, Ticket, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FortniteAccount, Transaction } from '@/types';
 
@@ -83,39 +82,63 @@ const DashboardHome: React.FC = () => {
   if (user.role === 'buyer') {
     return (
       <div className="space-y-6">
-        <h2 className="text-3xl font-bold">Welcome, {user.username}!</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-bold">Welcome, {user.username}!</h2>
+          <Button asChild>
+            <Link to="/dashboard/tickets/new">
+              <Plus className="mr-2 h-4 w-4" />
+              New Ticket
+            </Link>
+          </Button>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Account Balance</CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Purchases</CardTitle>
+              <ShoppingBag className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${user.balance?.toFixed(2) || '0.00'}</div>
-              <p className="text-xs text-muted-foreground">Available for purchases</p>
+              <div className="text-2xl font-bold">
+                {userTransactions?.length || 0}
+              </div>
+              <p className="text-xs text-gray-500">
+                {userTransactions?.length === 1 ? 'purchase' : 'purchases'}
+              </p>
             </CardContent>
           </Card>
-          
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Purchases</CardTitle>
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
+              <Store className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{userTransactions?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">Total purchases</p>
+              <div className="text-2xl font-bold">
+                {userListings?.length || 0}
+              </div>
+              <p className="text-xs text-gray-500">
+                {userListings?.length === 1 ? 'listing' : 'listings'}
+              </p>
             </CardContent>
           </Card>
-          
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Messages</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Support Tickets</CardTitle>
+              <Ticket className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Unread messages</p>
+              <p className="text-xs text-gray-500">active tickets</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Unread Messages</CardTitle>
+              <MessageSquare className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-gray-500">unread messages</p>
             </CardContent>
           </Card>
         </div>
@@ -195,39 +218,53 @@ const DashboardHome: React.FC = () => {
       <div className="space-y-6">
         <h2 className="text-3xl font-bold">Seller Dashboard</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Account Balance</CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">${user.balance?.toFixed(2) || '0.00'}</div>
-              <p className="text-xs text-muted-foreground">Available for withdrawal</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
-              <Store className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{activeListings.length}</div>
-              <p className="text-xs text-muted-foreground">Accounts for sale</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Sales</CardTitle>
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Purchases</CardTitle>
+              <ShoppingBag className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {userTransactions?.filter(t => t.status === 'completed').length || 0}
+                {userTransactions?.length || 0}
               </div>
-              <p className="text-xs text-muted-foreground">Successfully sold</p>
+              <p className="text-xs text-gray-500">
+                {userTransactions?.length === 1 ? 'purchase' : 'purchases'}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
+              <Store className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {userListings?.length || 0}
+              </div>
+              <p className="text-xs text-gray-500">
+                {userListings?.length === 1 ? 'listing' : 'listings'}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Support Tickets</CardTitle>
+              <Ticket className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-gray-500">active tickets</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Unread Messages</CardTitle>
+              <MessageSquare className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">0</div>
+              <p className="text-xs text-gray-500">unread messages</p>
             </CardContent>
           </Card>
         </div>

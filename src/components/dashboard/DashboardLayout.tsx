@@ -19,7 +19,8 @@ import {
   AlertCircle,
   Bell,
   FileText,
-  DollarSign
+  DollarSign,
+  Ticket
 } from 'lucide-react';
 import {
   Sidebar,

@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useUser } from '@/contexts/UserContext';
 import { supabase } from '@/integrations/supabase/client';
 import WalletSettings from '@/components/profile/WalletSettings';
-import { EmailChangeForm } from '@/components/EmailChangeForm';
+import EmailChangeForm from '@/components/EmailChangeForm';
 import type { User } from '@/types';
 
 const SettingsPage = () => {
