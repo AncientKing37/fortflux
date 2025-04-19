@@ -1,13 +1,14 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Head } from 'next/head';
 
 const Privacy: React.FC = () => {
   return (
     <div className="min-h-screen">
-      <Helmet>
-        <title>FortFlux | Privacy Policy</title>
-        <meta name="description" content="Privacy policy for FortFlux marketplace" />
-      </Helmet>
+      <Head>
+        <title>Privacy Policy | FortFlux</title>
+        <meta name="description" content="Privacy policy for FortFlux, detailing how we collect, use, and protect your personal information." />
+      </Head>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">
         <div className="container mx-auto text-center">
@@ -92,7 +93,7 @@ const Privacy: React.FC = () => {
             <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "last updated" date.</p>
             
             <h2 className="text-2xl font-bold mt-8 mb-4">11. Contact Us</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us at privacy@fortmarket.demo.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us at privacy@fortflux.demo.</p>
           </div>
         </div>
       </div>

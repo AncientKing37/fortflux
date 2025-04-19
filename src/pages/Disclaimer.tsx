@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -6,8 +5,8 @@ const Disclaimer: React.FC = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Disclaimer | EL1TE MARKETPLACE</title>
-        <meta name="description" content="Legal disclaimer for EL1TE MARKETPLACE, explaining the limitations of our service and your responsibilities." />
+        <title>Disclaimer | FortFlux</title>
+        <meta name="description" content="Legal disclaimer for FortFlux, explaining the limitations of our service and your responsibilities." />
       </Helmet>
       
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 py-20 px-4">
@@ -25,10 +24,10 @@ const Disclaimer: React.FC = () => {
             <p className="text-sm text-gray-500 mb-6">Last updated: April 14, 2025</p>
             
             <h2 className="text-2xl font-bold mb-4">Website Disclaimer</h2>
-            <p>The information provided by EL1TE MARKETPLACE ("we," "us," or "our") on our website is for general informational purposes only. All information on the site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or completeness of any information on the site.</p>
+            <p>The information provided by FortFlux ("we," "us," or "our") on our website is for general informational purposes only. All information on the site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or completeness of any information on the site.</p>
             
             <h2 className="text-2xl font-bold mt-8 mb-4">No Affiliation with Epic Games</h2>
-            <p>EL1TE MARKETPLACE is not affiliated with, endorsed by, or in any way officially connected with Epic Games, Inc. or Fortnite. All Fortnite assets, including names, characters, images, and related intellectual property, are the property of Epic Games, Inc.</p>
+            <p>FortFlux is not affiliated with, endorsed by, or in any way officially connected with Epic Games, Inc. or Fortnite. All Fortnite assets, including names, characters, images, and related intellectual property, are the exclusive property of Epic Games, Inc.</p>
             <p className="mt-2">This is a third-party marketplace that facilitates transactions between buyers and sellers of gaming accounts. We do not create, sell, or provide any game content ourselves.</p>
             
             <h2 className="text-2xl font-bold mt-8 mb-4">Account Trading Risks</h2>
@@ -63,7 +62,7 @@ const Disclaimer: React.FC = () => {
             <p>The information on the Platform is provided with the understanding that the Platform is not herein engaged in rendering legal, accounting, tax, or other professional advice and services. As such, it should not be used as a substitute for consultation with professional accounting, tax, legal, or other competent advisers.</p>
             
             <h2 className="text-2xl font-bold mt-8 mb-4">Contact Us</h2>
-            <p>If you have any questions about this Disclaimer, please contact us at legal@fortmarket.demo.</p>
+            <p>If you have any questions about this Disclaimer, please contact us at legal@fortflux.demo.</p>
           </div>
         </div>
       </div>

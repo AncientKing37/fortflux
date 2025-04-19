@@ -31,63 +31,72 @@ import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters").max(100),
-  description: z.string().min(20, "Description must be at least 20 characters"),
-  price: z.coerce.number().positive("Price must be positive"),
-  platform: z.enum(["pc", "ps4", "ps5", "xbox", "switch"], {
-    required_error: "Please select a platform",
-  }),
-  lastActivity: z.date({
+  title: z.string().min(10, "Title must be at least 10 characters").max(100),
+  description: z.string().min(50, "Description must be at least 50 characters").max(2000),
+  price: z.coerce.number().min(0, "Price must be at least 0").optional(),
+  images: z.array(z.string()).optional().default([]),
+  lastActivity: z.coerce.date({
     required_error: "Please select a date",
+    invalid_type_error: "That's not a valid date",
   }),
-  epicUsername: z.string().min(3, "Username must be at least 3 characters").max(32, "Username must be at most 32 characters"),
+  epicUsername: z.string()
+    .min(3, "Username must be at least 3 characters")
+    .max(32)
+    .regex(/^[a-zA-Z0-9._-]+$/, "Username can only contain letters, numbers, dots, underscores, and hyphens"),
   emailDomain: z.string()
-    .min(1, "Domain is required")
-    .regex(/^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/, "Please enter a valid domain (e.g., gmail.com, outlook.com)")
-    .optional(),
+    .min(1, "Email domain is required")
+    .refine(
+      (value) => !value.includes('@'),
+      "Please enter only the domain part (without @ symbol)"
+    )
+    .refine(
+      (value) => /^[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z]{2,}$/.test(value),
+      "Please enter a valid domain (e.g. gmail.com)"
+    ),
+  canLinkTo: z.array(z.string()).optional().default([]),
   isEmailChangeable: z.boolean().default(false),
-  skinCount: z.coerce.number().min(0, "Cannot be negative"),
-  battlePassLevel: z.coerce.number().min(0, "Cannot be negative").max(200),
-  vBucks: z.coerce.number().min(0, "Cannot be negative"),
-  hasRareSkins: z.boolean().default(false),
-  hasOGSkins: z.boolean().default(false),
-  hasExclusiveSkins: z.boolean().default(false),
-  accountCreationYear: z.coerce.number()
-    .min(2017, "Fortnite was released in 2017")
-    .max(new Date().getFullYear()),
-  email: z.string().email("Invalid email format").optional(),
-  images: z.any().optional(),
-  hasSaveTheWorld: z.boolean().default(false),
-  stwPowerLevel: z.coerce.number().min(0, "Cannot be negative").optional(),
+  hasStw: z.boolean().default(false),
+  stwPowerLevel: z.coerce.number().min(1).max(999).optional()
+    .refine(
+      (val) => val === undefined || val === null || val >= 1,
+      "Power level must be at least 1"
+    ),
+  numSkins: z.coerce.number().min(1, "Must have at least 1 skin"),
+  preferredTrade: z.string().optional(),
+  tradeRequirements: z.string().optional(),
+  email: z.string().email("Invalid email address").optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const ListingForm: React.FC = () => {
+interface ListingFormProps {
+  listingType: 'sell' | 'trade';
+}
+
+const ListingForm: React.FC<ListingFormProps> = ({ listingType }) => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [images, setImages] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      price: 0,
-      platform: 'pc',
+      title: "",
+      description: "",
+      price: listingType === 'sell' ? 0 : undefined,
+      images: [],
       lastActivity: new Date(),
-      epicUsername: '',
-      emailDomain: '',
+      epicUsername: "",
+      emailDomain: "",
+      canLinkTo: [],
       isEmailChangeable: false,
-      skinCount: 0,
-      battlePassLevel: 0,
-      vBucks: 0,
-      hasRareSkins: false,
-      hasOGSkins: false,
-      hasExclusiveSkins: false,
-      accountCreationYear: 2017,
-      hasSaveTheWorld: false,
+      hasStw: false,
+      stwPowerLevel: 1,
+      numSkins: 1,
+      preferredTrade: "",
+      tradeRequirements: "",
+      email: "",
     },
   });
 
@@ -126,8 +135,7 @@ const ListingForm: React.FC = () => {
     
     try {
       for (const image of images) {
-        const fileExt = image.name.split('.').pop();
-        const fileName = `${userId}/${uuidv4()}.${fileExt}`;
+        const fileName = `${userId}/${uuidv4()}.${image.name.split('.').pop()}`;
         const filePath = `${fileName}`;
         
         const { error: uploadError } = await supabase.storage
@@ -157,50 +165,64 @@ const ListingForm: React.FC = () => {
       return;
     }
 
+    if (images.length === 0) {
+      toast.error("Please upload at least one image");
+      return;
+    }
+
     try {
-      setUploading(true);
-      const imageUrls = await uploadImages(user.id);
+      setIsUploading(true);
       
-      const { error } = await supabase
+      // Upload images first
+      let imageUrls: string[] = [];
+      try {
+        imageUrls = await uploadImages(user.id);
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        toast.error('Failed to upload images. Please try again.');
+        return;
+      }
+
+      // Prepare the listing data
+      const listingData = {
+        title: data.title,
+        description: data.description,
+        price: listingType === 'sell' ? data.price : 0,
+        images: imageUrls,
+        seller_id: user.id,
+        status: 'pending',
+        type: listingType,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('Submitting listing data:', listingData);
+      
+      const { data: listing, error } = await supabase
         .from('fortnite_accounts')
-        .insert({
-          seller_id: user.id,
-          title: data.title,
-          description: data.description,
-          price: data.price,
-          images: imageUrls,
-          status: 'pending_approval',
-          platform: data.platform,
-          last_activity: data.lastActivity.toISOString(),
-          epic_username: data.epicUsername,
-          email_domain: data.emailDomain,
-          is_email_changeable: data.isEmailChangeable,
-          skin_count: data.skinCount,
-          battle_pass_level: data.battlePassLevel,
-          v_bucks: data.vBucks,
-          has_rare_skins: data.hasRareSkins,
-          has_og_skins: data.hasOGSkins,
-          has_exclusive_skins: data.hasExclusiveSkins,
-          account_creation_year: data.accountCreationYear,
-          contact_email: data.email,
-          has_save_the_world: data.hasSaveTheWorld,
-          stw_power_level: data.stwPowerLevel,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
+        .insert([listingData])
+        .select()
+        .single();
         
       if (error) {
-        toast.error(error.message);
+        console.error('Error creating listing:', error);
+        if (error.code === '23505') {
+          toast.error('You already have a listing with this Epic username');
+        } else if (error.code === '23503') {
+          toast.error('Invalid user account');
+        } else {
+          toast.error(`Failed to create listing: ${error.message}`);
+        }
         return;
       }
       
-      toast.success("Listing submitted for approval!");
-      navigate("/dashboard/listings");
+      toast.success('Listing created successfully!');
+      navigate('/dashboard/listings');
     } catch (error: any) {
-      console.error("Error creating listing:", error);
-      toast.error(error.message || "Failed to create listing. Please try again.");
+      console.error('Error creating listing:', error);
+      toast.error(error.message || 'Failed to create listing');
     } finally {
-      setUploading(false);
+      setIsUploading(false);
     }
   };
 
@@ -231,56 +253,30 @@ const ListingForm: React.FC = () => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price (USD)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="99.99" 
-                        min="0" 
-                        step="0.01"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Set a competitive price for your account
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="platform"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Platform</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+              {listingType === 'sell' && (
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price (USD)</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select platform" />
-                        </SelectTrigger>
+                        <Input 
+                          type="number" 
+                          placeholder="99.99" 
+                          min="0" 
+                          step="0.01"
+                          {...field} 
+                        />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="pc">PC</SelectItem>
-                        <SelectItem value="ps4">PlayStation 4</SelectItem>
-                        <SelectItem value="ps5">PlayStation 5</SelectItem>
-                        <SelectItem value="xbox">Xbox</SelectItem>
-                        <SelectItem value="switch">Nintendo Switch</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Select the platform this account is primarily used on
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormDescription>
+                        Set a competitive price for your account
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
@@ -366,7 +362,7 @@ const ListingForm: React.FC = () => {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(new Date(field.value), "PPP")
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -377,7 +373,7 @@ const ListingForm: React.FC = () => {
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value}
+                          selected={field.value ? new Date(field.value) : undefined}
                           onSelect={field.onChange}
                           disabled={(date) =>
                             date > new Date() || date < new Date("2017-01-01")
@@ -396,30 +392,7 @@ const ListingForm: React.FC = () => {
 
               <FormField
                 control={form.control}
-                name="accountCreationYear"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Account Creation Year</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="2017" 
-                        min="2017"
-                        max={new Date().getFullYear()}
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Year the account was created
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="skinCount"
+                name="numSkins"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Number of Skins</FormLabel>
@@ -427,7 +400,7 @@ const ListingForm: React.FC = () => {
                       <Input 
                         type="number" 
                         placeholder="50" 
-                        min="0"
+                        min="1"
                         {...field} 
                       />
                     </FormControl>
@@ -441,43 +414,21 @@ const ListingForm: React.FC = () => {
 
               <FormField
                 control={form.control}
-                name="battlePassLevel"
+                name="stwPowerLevel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Battle Pass Level</FormLabel>
+                    <FormLabel>Save the World Power Level</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="100" 
-                        min="0"
-                        max="200"
+                        placeholder="131" 
+                        min="1"
+                        max="999"
                         {...field} 
                       />
                     </FormControl>
                     <FormDescription>
-                      Current season's battle pass level
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="vBucks"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>V-Bucks Balance</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="1000" 
-                        min="0"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Current V-Bucks balance
+                      Current power level in Save the World
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -487,7 +438,7 @@ const ListingForm: React.FC = () => {
               <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
                 <FormField
                   control={form.control}
-                  name="hasSaveTheWorld"
+                  name="hasStw"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                       <FormControl>
@@ -502,99 +453,6 @@ const ListingForm: React.FC = () => {
                         </FormLabel>
                         <FormDescription>
                           Account includes Save the World mode
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="stwPowerLevel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Save the World Power Level</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="131" 
-                          min="0"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Current power level in Save the World
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                <FormField
-                  control={form.control}
-                  name="hasRareSkins"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Has Rare Skins
-                        </FormLabel>
-                        <FormDescription>
-                          Account includes rare or limited-time skins
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="hasOGSkins"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Has OG Skins
-                        </FormLabel>
-                        <FormDescription>
-                          Account includes original/OG skins from early seasons
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="hasExclusiveSkins"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Has Exclusive Skins
-                        </FormLabel>
-                        <FormDescription>
-                          Account includes platform-exclusive or promotional skins
                         </FormDescription>
                       </div>
                     </FormItem>
@@ -622,6 +480,50 @@ const ListingForm: React.FC = () => {
                   </FormItem>
                 )}
               />
+
+              {listingType === 'trade' && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="preferredTrade"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preferred Trade</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Describe what kind of account you're looking to trade for"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Specify what you're looking for in a trade
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tradeRequirements"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Trade Requirements</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="List any specific requirements for the trade"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Include any must-have features or conditions
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
 
               <FormField
                 control={form.control}
@@ -691,15 +593,15 @@ const ListingForm: React.FC = () => {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={uploading}
+              disabled={isUploading}
             >
-              {uploading ? (
+              {isUploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Listing...
+                  Uploading...
                 </>
               ) : (
-                'Create Listing'
+                `Create ${listingType === 'sell' ? 'Sale' : 'Trade'} Listing`
               )}
             </Button>
           </form>

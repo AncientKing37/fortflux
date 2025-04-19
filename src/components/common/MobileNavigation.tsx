@@ -10,7 +10,9 @@ import {
   DollarSign,
   HeadphonesIcon,
   Menu,
-  X
+  X,
+  RefreshCw,
+  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/contexts/UserContext';
@@ -170,6 +172,18 @@ const MobileNavigation: React.FC = () => {
                   <span>{route.label}</span>
                 </Link>
               ))}
+              <Link to="/marketplace" className="flex items-center space-x-2 text-gray-700 hover:text-yellow-500">
+                <ShoppingBag className="h-5 w-5" />
+                <span>Marketplace</span>
+              </Link>
+              <Link to="/trade-accounts" className="flex items-center space-x-2 text-gray-700 hover:text-yellow-500">
+                <RefreshCw className="h-5 w-5" />
+                <span>Trade Accounts</span>
+              </Link>
+              <Link to="/how-it-works" className="flex items-center space-x-2 text-gray-700 hover:text-yellow-500">
+                <HelpCircle className="h-5 w-5" />
+                <span>How It Works</span>
+              </Link>
             </div>
           </SheetContent>
         </Sheet>

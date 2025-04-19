@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
-import MarketplaceHeader from '@/components/marketplace/MarketplaceHeader';
 import MarketplaceFilters from '@/components/marketplace/MarketplaceFilters';
 import ListingGrid from '@/components/marketplace/ListingGrid';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
 
 type FortniteAccount = Database['public']['Tables']['fortnite_accounts']['Row'];
 type AccountStatus = 'available' | 'pending' | 'sold' | 'trading';
 
-const Marketplace: React.FC = () => {
+const TradeAccounts: React.FC = () => {
   const [listings, setListings] = useState<FortniteAccount[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,7 +21,7 @@ const Marketplace: React.FC = () => {
   const [minSkins, setMinSkins] = useState<number>(0);
   const [rarity, setRarity] = useState<string>('all');
   const [hasBattlePass, setHasBattlePass] = useState<boolean>(false);
-  const [dateRange, setDateRange] = useState<number>(0); // 0=anytime, 1=today, 7=week, etc.
+  const [dateRange, setDateRange] = useState<number>(0);
 
   useEffect(() => {
     fetchListings();
@@ -32,7 +33,7 @@ const Marketplace: React.FC = () => {
       const { data, error } = await supabase
         .from('fortnite_accounts')
         .select()
-        .eq('status', 'available')
+        .eq('status', 'available' as AccountStatus)
         .order('created_at', { ascending: false });
         
       if (error) {
@@ -41,8 +42,8 @@ const Marketplace: React.FC = () => {
       
       setListings(data || []);
     } catch (error: any) {
-      console.error('Error fetching listings:', error);
-      toast.error('Failed to load listings');
+      console.error('Error fetching trade listings:', error);
+      toast.error('Failed to load trade listings');
     } finally {
       setLoading(false);
     }
@@ -61,12 +62,12 @@ const Marketplace: React.FC = () => {
   const filteredListings = listings.filter(listing => {
     // Search term filter
     if (searchTerm && !listing.title.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !listing.description?.toLowerCase().includes(searchTerm.toLowerCase())) {
+        !listing.description?.toLowerCase()?.includes(searchTerm.toLowerCase())) {
       return false;
     }
     
     // Price range filter
-    const price = parseFloat(listing.price.toString());
+    const price = listing.price;
     if (price < priceRange[0] || price > priceRange[1]) {
       return false;
     }
@@ -103,9 +104,9 @@ const Marketplace: React.FC = () => {
   const sortedListings = [...filteredListings].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
-        return parseFloat(a.price.toString()) - parseFloat(b.price.toString());
+        return a.price - b.price;
       case 'price-high':
-        return parseFloat(b.price.toString()) - parseFloat(a.price.toString());
+        return b.price - a.price;
       case 'most-skins':
         return (b.skins || 0) - (a.skins || 0);
       case 'newest':
@@ -117,14 +118,31 @@ const Marketplace: React.FC = () => {
   return (
     <div className="min-h-screen bg-black">
       <Helmet>
-        <title>Fortnite Accounts Marketplace</title>
-        <meta name="description" content="Browse and buy verified Fortnite accounts with rare skins, battle passes, and more." />
+        <title>Trade Fortnite Accounts | FortFlux</title>
+        <meta name="description" content="Trade your Fortnite accounts securely with other players." />
       </Helmet>
       
-      <MarketplaceHeader 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-black text-white py-16 px-4 relative overflow-hidden">
+        <div className="container mx-auto text-center relative z-10">
+          <h1 className="text-4xl font-bold mb-4 text-black">Fortnite Account Trading</h1>
+          <p className="text-lg mb-8 max-w-3xl mx-auto text-gray-900 font-medium">
+            Trade your Fortnite accounts securely with other players on our trusted platform.
+          </p>
+          
+          <div className="max-w-md mx-auto relative">
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Search accounts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 py-6 bg-white text-gray-900 rounded-lg border-2 border-yellow-400 focus:border-yellow-500 focus:ring-yellow-500 shadow-lg"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
+      </div>
       
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row gap-8">
@@ -150,7 +168,7 @@ const Marketplace: React.FC = () => {
           
           <div className="flex-1 min-w-0">
             <div className="mb-6 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white">Available Accounts</h2>
+              <h2 className="text-xl font-bold text-white">Available for Trade</h2>
               <p className="text-sm text-yellow-400">{sortedListings.length} account(s) found</p>
             </div>
             
@@ -166,4 +184,4 @@ const Marketplace: React.FC = () => {
   );
 };
 
-export default Marketplace;
+export default TradeAccounts; 

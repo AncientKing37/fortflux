@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
 import Signup from './pages/Signup';
 import Marketplace from './pages/Marketplace';
+import TradeAccounts from './pages/TradeAccounts';
 import ListingDetails from './pages/ListingDetails';
 import SellerProfile from './pages/SellerProfile';
 import Favorites from './pages/Favorites';
@@ -64,6 +65,8 @@ import './styles/fonts.css';  // Import our custom fonts
 import TicketList from '@/components/tickets/TicketList';
 import NewTicketForm from '@/components/tickets/NewTicketForm';
 import TicketDetail from '@/components/tickets/TicketDetail';
+import ErrorBoundary from './components/ErrorBoundary';
+import ListingTypeSelection from './pages/dashboard/ListingTypeSelection';
 
 declare global {
   interface Window {
@@ -262,6 +265,17 @@ function App() {
                 } 
               />
               <Route 
+                path="/trade-accounts" 
+                element={
+                  <ErrorBoundary>
+                    <Navbar />
+                    <TradeAccounts />
+                    <Footer />
+                    <MobileNavigation />
+                  </ErrorBoundary>
+                } 
+              />
+              <Route 
                 path="/marketplace/:id" 
                 element={
                   <>
@@ -381,7 +395,8 @@ function App() {
               <Route path="/dashboard/purchases" element={<DashboardLayout><Purchases /></DashboardLayout>} />
               <Route path="/dashboard/become-seller" element={<DashboardLayout><BecomeASeller /></DashboardLayout>} />
               <Route path="/dashboard/listings" element={<DashboardLayout><ListingsManagement /></DashboardLayout>} />
-              <Route path="/dashboard/create-listing" element={<DashboardLayout><CreateListing /></DashboardLayout>} />
+              <Route path="/dashboard/create-listing" element={<DashboardLayout><ListingTypeSelection /></DashboardLayout>} />
+              <Route path="/dashboard/create-listing/:type" element={<DashboardLayout><CreateListing /></DashboardLayout>} />
               <Route path="/dashboard/settings" element={<DashboardLayout><Settings /></DashboardLayout>} />
               
               {/* Ticket System Routes */}

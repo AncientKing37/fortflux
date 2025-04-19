@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +13,7 @@ import PurchasePanel from '@/components/listing/PurchasePanel';
 import SellerInfoPanel from '@/components/listing/SellerInfoPanel';
 import FavoriteButton from '@/components/listing/FavoriteButton';
 import { Helmet } from 'react-helmet-async';
+import { MessageSquare } from 'lucide-react';
 
 interface Listing {
   id: string;
@@ -128,6 +128,31 @@ const ListingDetails: React.FC = () => {
     }
   };
 
+  const handleRequestTrade = () => {
+    if (!user) {
+      toast.error('Please sign in to request a trade');
+      return;
+    }
+
+    if (window.$crisp) {
+      // Set up the chat with trade context
+      window.$crisp.push(["set", "session:data", [
+        ["Trade Request", "Active"],
+        ["Listing ID", listing?.id],
+        ["Seller ID", listing?.seller_id],
+        ["Buyer ID", user.id],
+        ["Trade Type", "Account Trade"]
+      ]]);
+
+      // Open chat with a pre-filled message
+      window.$crisp.push(["do", "chat:open"]);
+      window.$crisp.push(["do", "message:send", [
+        "text",
+        `Hi! I'm interested in trading for your account "${listing?.title}". Let's discuss the details.`
+      ]]);
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-12 flex justify-center">
@@ -222,11 +247,22 @@ const ListingDetails: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          <PurchasePanel 
-            transaction={transaction}
-            listing={listing}
-            sellerUsername={seller?.username || ''}
-          />
+          <div className="flex gap-4">
+            <PurchasePanel 
+              transaction={transaction}
+              listing={listing}
+              sellerUsername={seller?.username || ''}
+            />
+            
+            <Button
+              onClick={handleRequestTrade}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
+              <MessageSquare className="h-5 w-5" />
+              Request Trade
+            </Button>
+          </div>
           
           <SellerInfoPanel seller={seller} />
         </div>

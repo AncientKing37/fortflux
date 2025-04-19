@@ -22,72 +22,114 @@ const NotificationBell = () => {
   const { user } = useUser();
   
   useEffect(() => {
-    if (user) {
-      fetchNotifications();
-      
-      // Set up real-time subscription for new notifications
-      const channel = supabase
-        .channel('notifications-changes')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
-          },
-          (payload) => {
-            const newNotification = {
-              id: payload.new.id,
-              userId: payload.new.user_id,
-              type: payload.new.type,
-              title: payload.new.title,
-              content: payload.new.content,
-              read: payload.new.read,
-              createdAt: new Date(payload.new.created_at),
-              metadata: payload.new.metadata
-            };
-            setNotifications(prev => [newNotification, ...prev]);
-            if (!newNotification.read) {
-              setUnreadCount(count => count + 1);
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let isSubscribed = false;
+
+    const setupRealtimeSubscription = async () => {
+      if (!user || isSubscribed) return;
+
+      try {
+        // Fetch initial notifications
+        await fetchNotifications();
+
+        // Set up real-time subscription
+        channel = supabase
+          .channel(`notifications:${user.id}`, {
+            config: {
+              broadcast: { ack: true }
             }
+          })
+          .on(
+            'postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'notifications',
+              filter: `user_id=eq.${user.id}`
+            },
+            (payload) => {
+              const newNotification = {
+                id: payload.new.id,
+                userId: payload.new.user_id,
+                type: payload.new.type,
+                title: payload.new.title,
+                content: payload.new.content,
+                read: payload.new.read,
+                createdAt: new Date(payload.new.created_at),
+                metadata: payload.new.metadata
+              };
+              setNotifications(prev => [newNotification, ...prev]);
+              if (!newNotification.read) {
+                setUnreadCount(count => count + 1);
+              }
+            }
+          )
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'notifications',
+              filter: `user_id=eq.${user.id}`
+            },
+            (payload) => {
+              const updatedNotification = {
+                id: payload.new.id,
+                userId: payload.new.user_id,
+                type: payload.new.type,
+                title: payload.new.title,
+                content: payload.new.content,
+                read: payload.new.read,
+                createdAt: new Date(payload.new.created_at),
+                metadata: payload.new.metadata
+              };
+              setNotifications(prev => 
+                prev.map(notif => 
+                  notif.id === updatedNotification.id ? updatedNotification : notif
+                )
+              );
+              calculateUnreadCount();
+            }
+          );
+
+        const { error } = await channel.subscribe((status, err) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('Successfully subscribed to notifications channel');
+            isSubscribed = true;
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            console.error('Channel error or closed:', err);
+            isSubscribed = false;
+            // Attempt to resubscribe after a delay
+            setTimeout(() => {
+              if (channel) {
+                channel.unsubscribe();
+                setupRealtimeSubscription();
+              }
+            }, 5000);
           }
-        )
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`
-          },
-          (payload) => {
-            const updatedNotification = {
-              id: payload.new.id,
-              userId: payload.new.user_id,
-              type: payload.new.type,
-              title: payload.new.title,
-              content: payload.new.content,
-              read: payload.new.read,
-              createdAt: new Date(payload.new.created_at),
-              metadata: payload.new.metadata
-            };
-            setNotifications(prev => 
-              prev.map(notif => 
-                notif.id === updatedNotification.id ? updatedNotification : notif
-              )
-            );
-            // Recalculate unread count
-            calculateUnreadCount();
-          }
-        )
-        .subscribe();
-      
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }
-  }, [user]);
+        });
+
+        if (error) {
+          throw error;
+        }
+      } catch (error) {
+        console.error('Error setting up realtime subscription:', error);
+        isSubscribed = false;
+      }
+    };
+
+    setupRealtimeSubscription();
+
+    // Cleanup function
+    return () => {
+      isSubscribed = false;
+      if (channel) {
+        console.log('Cleaning up notification channel subscription');
+        channel.unsubscribe();
+        channel = null;
+      }
+    };
+  }, [user]); // Only re-run if user changes
   
   const fetchNotifications = async () => {
     if (!user) return;

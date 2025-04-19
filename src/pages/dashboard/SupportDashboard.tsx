@@ -18,7 +18,7 @@ const SupportDashboard: React.FC = () => {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     if (user) {
       fetchTickets();
@@ -58,11 +58,11 @@ const SupportDashboard: React.FC = () => {
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
           <p className="text-red-500">{error}</p>
-        </div>
+      </div>
       </DashboardLayout>
     );
   }
-
+  
   return (
     <DashboardLayout>
       <div className="container mx-auto px-4 py-8">
@@ -70,15 +70,15 @@ const SupportDashboard: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
+                            <div className="flex items-center">
               <MessageSquare className="w-8 h-8 text-yellow-500 mr-4" />
               <div>
                 <h3 className="text-lg font-semibold">Total Tickets</h3>
                 <p className="text-2xl font-bold">{tickets.length}</p>
-              </div>
+                    </div>
             </div>
-          </div>
-          
+            </div>
+            
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center">
               <Users className="w-8 h-8 text-blue-500 mr-4" />
@@ -86,29 +86,29 @@ const SupportDashboard: React.FC = () => {
                 <h3 className="text-lg font-semibold">Active Tickets</h3>
                 <p className="text-2xl font-bold">
                   {tickets.filter(t => t.status === 'open' || t.status === 'in_progress').length}
-                </p>
-              </div>
-            </div>
+                      </p>
+                    </div>
+                  </div>
           </div>
           
           <div className="bg-white p-6 rounded-lg shadow">
-            <div className="flex items-center">
+                        <div className="flex items-center">
               <AlertCircle className="w-8 h-8 text-red-500 mr-4" />
-              <div>
+                          <div>
                 <h3 className="text-lg font-semibold">Urgent Tickets</h3>
                 <p className="text-2xl font-bold">0</p>
-              </div>
-            </div>
-          </div>
-        </div>
+                          </div>
+                          </div>
+                        </div>
+                        </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="p-6">
             <h2 className="text-xl font-semibold mb-4">Recent Tickets</h2>
             {tickets.length === 0 ? (
               <p className="text-gray-500">No support tickets found</p>
-            ) : (
-              <div className="space-y-4">
+                      ) : (
+                        <div className="space-y-4">
                 {tickets.map((ticket) => (
                   <div
                     key={ticket.id}
@@ -128,14 +128,14 @@ const SupportDashboard: React.FC = () => {
                       }`}>
                         {ticket.status.replace('_', ' ')}
                       </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
           </div>
         </div>
-      </div>
+    </div>
     </DashboardLayout>
   );
 };

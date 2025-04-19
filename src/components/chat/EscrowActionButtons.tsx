@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, X, Mail, Eye } from 'lucide-react';
 import { useSocket } from '@/contexts/SocketContext';
 import { Transaction } from '@/types';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EscrowActionButtonsProps {
   transaction: Transaction;
@@ -24,74 +24,70 @@ const EscrowActionButtons: React.FC<EscrowActionButtonsProps> = ({
   if (!isEscrow) return null;
 
   const handleReleaseFunds = async () => {
-    if (transaction.status !== 'in_escrow') {
-      toast.error('Transaction is not in escrow status');
-      return;
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .update({ 
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', transaction.id);
+
+      if (error) throw error;
+      
+      toast.success('Funds released successfully');
+    } catch (error) {
+      console.error('Error releasing funds:', error);
+      toast.error('Failed to release funds');
     }
-    await releaseFunds(transaction.id);
   };
 
   const handleRefundBuyer = async () => {
-    if (transaction.status !== 'in_escrow') {
-      toast.error('Transaction is not in escrow status');
-      return;
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .update({ 
+          status: 'refunded',
+          refunded_at: new Date().toISOString()
+        })
+        .eq('id', transaction.id);
+
+      if (error) throw error;
+      
+      toast.success('Refund processed successfully');
+    } catch (error) {
+      console.error('Error processing refund:', error);
+      toast.error('Failed to process refund');
     }
-    await refundBuyer(transaction.id);
   };
 
   const handleSendReminder = async () => {
-    await sendReminderToParties(transaction.id, buyerId, sellerId);
+    try {
+      // Send notification to both parties
+      await Promise.all([
+        supabase.from('notifications').insert({
+          user_id: buyerId,
+          type: 'escrow_reminder',
+          title: 'Transaction Reminder',
+          content: `Reminder about your pending transaction #${transaction.id}`,
+          transaction_id: transaction.id
+        }),
+        supabase.from('notifications').insert({
+          user_id: sellerId,
+          type: 'escrow_reminder',
+          title: 'Transaction Reminder',
+          content: `Reminder about your pending transaction #${transaction.id}`,
+          transaction_id: transaction.id
+        })
+      ]);
+      
+      toast.success('Reminder sent to both parties');
+    } catch (error) {
+      console.error('Error sending reminder:', error);
+      toast.error('Failed to send reminder');
+    }
   };
 
   const handleViewListing = () => {
     if (transaction.accountId) {
-      window.open(`/listing/${transaction.accountId}`, '_blank');
-    } else {
-      toast.error('Listing ID not available');
-    }
-  };
-
-  return (
-    <div className="flex flex-wrap gap-2 mt-2 escrow-actions">
-      <Button 
-        size="sm" 
-        className="bg-green-500 hover:bg-green-600"
-        onClick={handleReleaseFunds}
-        disabled={transaction.status !== 'in_escrow'}
-      >
-        <ArrowRight className="h-4 w-4 mr-1" />
-        Release Funds
-      </Button>
-      
-      <Button 
-        size="sm" 
-        variant="destructive"
-        onClick={handleRefundBuyer}
-        disabled={transaction.status !== 'in_escrow'}
-      >
-        <X className="h-4 w-4 mr-1" />
-        Cancel & Refund
-      </Button>
-      
-      <Button 
-        size="sm" 
-        variant="outline"
-        onClick={handleSendReminder}
-      >
-        <Mail className="h-4 w-4 mr-1" />
-        Send Reminder
-      </Button>
-      
-      <Button 
-        size="sm" 
-        variant="outline"
-        onClick={handleViewListing}
-      >
-        <Eye className="h-4 w-4 mr-1" />
-        View Listing
-      </Button>
-    </div>
-  );
-};
-
-export default EscrowActionButtons;
+      window.open(`

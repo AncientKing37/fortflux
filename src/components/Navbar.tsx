@@ -60,6 +60,9 @@ const Navbar: React.FC = () => {
           <Link to="/marketplace" className={`text-gray-700 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/marketplace' ? 'text-yellow-500 font-semibold' : ''}`}>
             Marketplace
           </Link>
+          <Link to="/trade-accounts" className={`text-gray-700 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/trade-accounts' ? 'text-yellow-500 font-semibold' : ''}`}>
+            Trade Accounts
+          </Link>
           <Link to="/how-it-works" className={`text-gray-700 hover:text-yellow-500 font-medium transition-colors ${location.pathname === '/how-it-works' ? 'text-yellow-500 font-semibold' : ''}`}>
             How It Works
           </Link>
@@ -156,6 +159,9 @@ const Navbar: React.FC = () => {
             </Link>
             <Link to="/marketplace" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
               Marketplace
+            </Link>
+            <Link to="/trade-accounts" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
+              Trade Accounts
             </Link>
             <Link to="/how-it-works" className="py-3 text-gray-700 hover:text-yellow-500 border-b border-yellow-500/20" onClick={() => setMobileMenuOpen(false)}>
               How It Works

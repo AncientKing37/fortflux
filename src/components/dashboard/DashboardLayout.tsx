@@ -3,44 +3,18 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
 import {
   LayoutDashboard,
-  ShoppingBag,
-  MessageSquare,
   User,
-  CreditCard,
-  Settings,
-  Users,
-  LifeBuoy,
-  LogOut,
-  Shield,
+  MessageSquare,
+  ShoppingBag,
   PlusCircle,
-  Store,
-  Home,
-  HeadphonesIcon,
-  AlertCircle,
-  Bell,
-  FileText,
   DollarSign,
-  Ticket
+  Settings,
+  HelpCircle,
+  LogOut,
 } from 'lucide-react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import MobileNavigation from '@/components/common/MobileNavigation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -51,204 +25,202 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  
+  const [isExpanded, setIsExpanded] = useState(false);
+
   if (!user) {
     navigate('/login', { state: { from: location } });
     return null;
   }
+
+  const mainMenuItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+    { icon: User, label: 'Profile', path: '/dashboard/profile' },
+    { icon: MessageSquare, label: 'Messages', path: '/dashboard/messages' },
+    { icon: ShoppingBag, label: 'My Listings', path: '/dashboard/listings' },
+    { icon: PlusCircle, label: 'Create Listing', path: '/dashboard/create-listing' },
+    { icon: DollarSign, label: 'Earnings', path: '/dashboard/earnings' },
+  ];
+
+  const settingsMenuItems = [
+    { icon: Settings, label: 'Settings', path: '/dashboard/settings' },
+    { icon: HelpCircle, label: 'Help & Support', path: '/dashboard/support' },
+  ];
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const commonMenuItems = [
-    { icon: LayoutDashboard, title: 'Dashboard', path: '/dashboard' },
-    { icon: User, title: 'Profile', path: '/dashboard/profile' },
-    { icon: MessageSquare, title: 'Messages', path: '/dashboard/messages' },
-  ];
-
-  const buyerMenuItems = [
-    ...commonMenuItems,
-    { icon: ShoppingBag, title: 'My Purchases', path: '/dashboard/purchases' },
-    { icon: CreditCard, title: 'Payment Methods', path: '/dashboard/payments' },
-    { icon: Store, title: 'Become a Seller', path: '/dashboard/become-seller' },
-  ];
-
-  const sellerMenuItems = [
-    ...commonMenuItems,
-    { icon: ShoppingBag, title: 'My Listings', path: '/dashboard/listings' },
-    { icon: PlusCircle, title: 'Create Listing', path: '/dashboard/create-listing' },
-    { icon: CreditCard, title: 'Earnings', path: '/dashboard/earnings' },
-  ];
-
-  const escrowMenuItems = [
-    ...commonMenuItems,
-    { icon: Shield, title: 'Active Escrows', path: '/dashboard/escrows' },
-    { icon: DollarSign, title: 'Release Funds', path: '/dashboard/release-funds' },
-    { icon: Users, title: 'User Transactions', path: '/dashboard/transactions' },
-    { icon: CreditCard, title: 'My Earnings', path: '/dashboard/escrow-earnings' },
-  ];
-
-  const supportMenuItems = [
-    ...commonMenuItems,
-    { icon: HeadphonesIcon, title: 'Support Dashboard', path: '/dashboard/support' },
-    { icon: AlertCircle, title: 'Disputes', path: '/dashboard/disputes' },
-    { icon: Bell, title: 'Send Notifications', path: '/dashboard/notifications' },
-    { icon: Users, title: 'User Management', path: '/dashboard/users' },
-  ];
-
-  const adminMenuItems = [
-    ...commonMenuItems,
-    { icon: Shield, title: 'Admin Dashboard', path: '/admin' },
-    { icon: Users, title: 'User Management', path: '/dashboard/users' },
-  ];
-
-  const getMenuItems = () => {
-    switch (user.role) {
-      case 'buyer': return buyerMenuItems;
-      case 'seller': return sellerMenuItems;
-      case 'escrow': return escrowMenuItems;
-      case 'support': return supportMenuItems;
-      case 'admin': return adminMenuItems;
-      default: return buyerMenuItems;
-    }
-  };
-
-  const menuItems = getMenuItems();
-
-  const menuItemStyles = {
-    default: "text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
-    active: "bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-foreground font-semibold",
-  };
-
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full flex-col">
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar className="border-r border-gray-200 dark:border-gray-800">
-            <SidebarHeader className="flex flex-col items-center justify-center pt-6 pb-2">
-              <Link to="/" className="text-xl font-bold marketplace-gradient-text mb-4">
-                FortMarket
-              </Link>
-              <Link to="/dashboard/profile">
-                <Avatar className="h-16 w-16 mb-2 cursor-pointer hover:ring-2 hover:ring-primary hover:ring-offset-2 transition-all avatar-ring">
-                  <AvatarImage src={user.avatar} alt={user.username} />
-                  <AvatarFallback className="bg-marketplace-purple text-white text-xl">
-                    {user.username.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-              <p className="text-lg font-medium dark:text-white">{user.username}</p>
-              <div className="capitalize px-2 py-0.5 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-foreground rounded-full text-xs font-medium mt-1">
-                {user.role}
-              </div>
-              
-              {user.role === 'seller' && (
-                <Link to={`/seller/${user.username}`} className="mt-2 text-xs text-primary hover:underline">
-                  View public profile
-                </Link>
-              )}
-            </SidebarHeader>
-            
-            <SidebarContent>
-              <SidebarGroup>
-                <SidebarGroupLabel className="text-gray-500 dark:text-gray-400">Main</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {menuItems.map((item) => (
-                      <SidebarMenuItem key={item.path}>
-                        <SidebarMenuButton 
-                          asChild 
-                          className={
-                            location.pathname === item.path 
-                              ? menuItemStyles.active 
-                              : menuItemStyles.default
-                          }
-                        >
-                          <Link to={item.path} className="flex items-center whitespace-nowrap overflow-hidden">
-                            <item.icon className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                            <span className="truncate">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-
-              <SidebarGroup className="mt-4">
-                <SidebarGroupLabel className="text-gray-500 dark:text-gray-400">Settings</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton 
-                        asChild 
-                        className={
-                          location.pathname === '/dashboard/settings'
-                            ? menuItemStyles.active
-                            : menuItemStyles.default
-                        }
-                      >
-                        <Link to="/dashboard/settings" className="flex items-center whitespace-nowrap overflow-hidden">
-                          <Settings className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                          <span className="truncate">Settings</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton 
-                        asChild 
-                        className={
-                          location.pathname === '/dashboard/help'
-                            ? menuItemStyles.active
-                            : menuItemStyles.default
-                        }
-                      >
-                        <Link to="/dashboard/help" className="flex items-center whitespace-nowrap overflow-hidden">
-                          <LifeBuoy className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                          <span className="truncate">Help & Support</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            </SidebarContent>
-            
-            <SidebarFooter>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start text-gray-700 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                onClick={handleLogout}
-              >
-                <LogOut className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                Logout
-              </Button>
-            </SidebarFooter>
-          </Sidebar>
-          
-          <div className="flex-1 overflow-auto pb-16 md:pb-0 dashboard-content">
-            <div className="sticky top-0 z-10 bg-background dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex justify-between items-center">
-              <div className="flex items-center">
-                <SidebarTrigger />
-                <h1 className="ml-4 text-xl font-bold truncate dark:text-white">
-                  {menuItems.find(item => item.path === location.pathname)?.title || 'Dashboard'}
-                </h1>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Link to="/" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
-                  Return to Marketplace
-                </Link>
-              </div>
+    <div className="flex h-screen bg-black">
+      {/* Sidebar */}
+      <div 
+        className={cn(
+          "fixed left-0 top-0 h-full bg-[#111111] transition-all duration-300 ease-in-out z-50 shadow-lg border-r border-[#FFD700]/20",
+          isExpanded ? "w-64" : "w-16"
+        )}
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+      >
+        {/* User Profile Section */}
+        <div className={cn(
+          "flex flex-col items-center gap-2 p-3 mb-6 mt-2 border-b border-[#FFD700]/20",
+          isExpanded ? "px-4" : "justify-center"
+        )}>
+          <Avatar className="h-12 w-12 ring-2 ring-[#FFD700]">
+            <AvatarImage src={user.avatar} alt={user.username} />
+            <AvatarFallback className="bg-[#FFD700] text-black font-semibold">
+              {user.username?.[0]?.toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          {isExpanded && (
+            <div className="text-center">
+              <p className="text-sm font-medium text-white truncate">
+                {user.username}
+              </p>
+              <span className="px-2 py-1 text-xs bg-[#FFD700] text-black font-medium rounded-full">
+                Seller
+              </span>
+              <button className="mt-1 text-xs text-white hover:text-[#FFD700] transition-colors">
+                View public profile
+              </button>
             </div>
-            <main className="p-4 md:p-6">{children}</main>
-          </div>
+          )}
         </div>
-        
-        {isMobile && <MobileNavigation />}
+
+        {/* Main Navigation */}
+        <div className="px-2">
+          <div className={cn("mb-2", isExpanded && "px-3")}>
+            <p className="text-xs font-medium text-[#FFD700]">Main</p>
+          </div>
+          <nav className="space-y-1">
+            {mainMenuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group relative",
+                    isActive
+                      ? "text-black bg-[#FFD700]"
+                      : "text-white hover:text-black hover:bg-[#FFD700]"
+                  )}
+                >
+                  <item.icon className={cn(
+                    "h-5 w-5 flex-shrink-0",
+                    isActive ? "text-black" : "text-white group-hover:text-black"
+                  )} />
+                  {isExpanded && (
+                    <span className="truncate">{item.label}</span>
+                  )}
+                  {!isExpanded && (
+                    <div className="absolute left-14 px-2 py-1 bg-[#111111] border border-[#FFD700]/20 rounded-md invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-50 text-white">
+                      {item.label}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Settings Navigation */}
+          <div className={cn("mt-8 mb-2", isExpanded && "px-3")}>
+            <p className="text-xs font-medium text-[#FFD700]">Settings</p>
+          </div>
+          <nav className="space-y-1">
+            {settingsMenuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group relative",
+                    isActive
+                      ? "text-black bg-[#FFD700]"
+                      : "text-white hover:text-black hover:bg-[#FFD700]"
+                  )}
+                >
+                  <item.icon className={cn(
+                    "h-5 w-5 flex-shrink-0",
+                    isActive ? "text-black" : "text-white group-hover:text-black"
+                  )} />
+                  {isExpanded && (
+                    <span className="truncate">{item.label}</span>
+                  )}
+                  {!isExpanded && (
+                    <div className="absolute left-14 px-2 py-1 bg-[#111111] border border-[#FFD700]/20 rounded-md invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-50 text-white">
+                      {item.label}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Logout Button */}
+        <div className={cn(
+          "p-2 mt-auto mb-4 border-t border-[#FFD700]/20",
+          isExpanded ? "px-4" : "px-2"
+        )}>
+          <button
+            onClick={handleLogout}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 w-full text-sm font-medium text-white hover:text-black hover:bg-[#FFD700] rounded-lg transition-all duration-200 group relative",
+              !isExpanded && "justify-center"
+            )}
+          >
+            <LogOut className="h-5 w-5 flex-shrink-0" />
+            {isExpanded && <span>Sign Out</span>}
+            {!isExpanded && (
+              <div className="absolute left-14 px-2 py-1 bg-[#111111] border border-[#FFD700]/20 rounded-md invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 whitespace-nowrap z-50 text-white">
+                Sign Out
+              </div>
+            )}
+          </button>
+        </div>
       </div>
-    </SidebarProvider>
+
+      {/* Main Content */}
+      <div className={cn(
+        "flex-1 flex flex-col overflow-hidden bg-black",
+        isExpanded ? "ml-64" : "ml-16"
+      )}>
+        <main className="flex-1 overflow-y-auto p-8">
+          <div className="h-full rounded-xl bg-[#111111] p-6 shadow-lg border border-[#FFD700]/20">
+            <style jsx global>{`
+              h1 {
+                color: #FFD700;
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+              }
+              h2 {
+                color: #FFD700;
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+              }
+              h3 {
+                color: #FFD700;
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+              }
+              .section-title {
+                color: #FFD700;
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+              }
+            `}</style>
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 };
 
